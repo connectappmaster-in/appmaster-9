@@ -378,52 +378,52 @@ const AssetDetail = () => {
               {/* Asset Details Grid */}
               <div className="lg:col-span-2">
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Asset Tag ID</p>
-                    <p className="text-base font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Site</p>
-                    <p className="text-base text-primary hover:underline cursor-pointer">{asset.site || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Purchase Date</p>
-                    <p className="text-base">{asset.purchase_date ? format(new Date(asset.purchase_date), "dd/MM/yyyy") : '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Location</p>
-                    <p className="text-base">{asset.location || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Cost</p>
-                    <p className="text-base font-semibold">₹{asset.cost?.toLocaleString() || '0.00'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Category</p>
-                    <p className="text-base">{asset.category || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Brand</p>
-                    <p className="text-base">{asset.brand || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Department</p>
-                    <p className="text-base">{asset.department || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Model</p>
-                    <p className="text-base">{asset.model || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Assigned to</p>
-                    <p className="text-base text-primary hover:underline cursor-pointer">{asset.assigned_to || '—'}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-sm font-semibold text-muted-foreground mb-1">Status</p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Asset Tag ID: </span>
+                    <span className="font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Site: </span>
+                    <span className="text-primary hover:underline cursor-pointer">{asset.site || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Purchase Date: </span>
+                    <span>{asset.purchase_date ? format(new Date(asset.purchase_date), "dd/MM/yyyy") : '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Location: </span>
+                    <span>{asset.location || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Cost: </span>
+                    <span className="font-semibold">₹{asset.cost?.toLocaleString() || '0.00'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Category: </span>
+                    <span>{asset.category || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Brand: </span>
+                    <span>{asset.brand || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Department: </span>
+                    <span>{asset.department || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Model: </span>
+                    <span>{asset.model || '—'}</span>
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold text-muted-foreground">Assigned to: </span>
+                    <span className="text-primary hover:underline cursor-pointer">{asset.assigned_to || '—'}</span>
+                  </p>
+                  <p className="text-sm col-span-2">
+                    <span className="font-semibold text-muted-foreground">Status: </span>
                     <Badge variant="outline" className={`${getStatusColor(asset.status) === 'default' ? 'bg-green-100 text-green-800' : ''} capitalize`}>
                       {asset.status === 'assigned' ? 'Checked out' : asset.status || 'available'}
                     </Badge>
-                  </div>
+                  </p>
                 </div>
               </div>
             </div>
