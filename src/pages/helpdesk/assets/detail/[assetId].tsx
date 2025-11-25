@@ -447,7 +447,7 @@ const AssetDetail = () => {
 
         {/* Tabs Section */}
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid grid-cols-6 lg:grid-cols-11 w-full h-9">
+          <TabsList className="w-full overflow-x-auto">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="photos">Photos</TabsTrigger>
