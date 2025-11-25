@@ -27,6 +27,13 @@ import HelpdeskTickets from "./pages/helpdesk/tickets/index";
 import TicketDetail from "./pages/helpdesk/tickets/[id]";
 import NewTicket from "./pages/helpdesk/new";
 import HelpdeskAssets from "./pages/helpdesk/assets";
+import AssetsList from "./pages/helpdesk/assets/list";
+import AssetDetail from "./pages/helpdesk/assets/detail/[assetId]";
+import AddAsset from "./pages/helpdesk/assets/add";
+import AssignAsset from "./pages/helpdesk/assets/assign";
+import ReturnAsset from "./pages/helpdesk/assets/return";
+import AssetReports from "./pages/helpdesk/assets/reports";
+import AssetSettings from "./pages/helpdesk/assets/settings";
 import HelpdeskKB from "./pages/helpdesk/kb";
 import HelpdeskProblemDetail from "./pages/helpdesk/problems/[id]";
 import HelpdeskChanges from "./pages/helpdesk/changes";
@@ -180,6 +187,13 @@ const App = () => {
             <Route path="service-requests/change-management/approvals" element={<ChangeManagementApprovals />} />
             
             <Route path="assets" element={<HelpdeskAssets />} />
+            <Route path="assets/list" element={<AssetsList />} />
+            <Route path="assets/detail/:assetId" element={<AssetDetail />} />
+            <Route path="assets/add" element={<AddAsset />} />
+            <Route path="assets/assign" element={<AssignAsset />} />
+            <Route path="assets/return" element={<ReturnAsset />} />
+            <Route path="assets/reports" element={<AssetReports />} />
+            <Route path="assets/settings" element={<AssetSettings />} />
             <Route path="subscription" element={<HelpdeskSubscriptionLayout />}>
               <Route index element={<HelpdeskSubscriptionDashboard />} />
               <Route path="tools" element={<HelpdeskSubscriptionTools />} />
