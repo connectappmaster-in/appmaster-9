@@ -99,25 +99,12 @@ export default function HelpdeskAssets() {
                     {allAssets.length}
                   </Badge>}
               </TabsTrigger>
-              <TabsTrigger value="assigned" className="gap-1.5 px-3 text-sm h-7">
-                <UserCheck className="h-3.5 w-3.5" />
-                Assigned
-                {assignments.length > 0 && <Badge variant="secondary" className="ml-1.5 text-xs px-1.5 py-0">
-                    {assignments.length}
-                  </Badge>}
-              </TabsTrigger>
-              <TabsTrigger value="available" className="gap-1.5 px-3 text-sm h-7">
-                Available
-                {availableAssets.length > 0 && <Badge variant="secondary" className="ml-1.5 text-xs px-1.5 py-0">
-                    {availableAssets.length}
-                  </Badge>}
-              </TabsTrigger>
               <TabsTrigger value="explore" className="gap-1.5 px-3 text-sm h-7">
                 Explore
               </TabsTrigger>
             </TabsList>
 
-            {activeTab !== 'assigned' && activeTab !== 'overview' && <>
+            {activeTab !== 'overview' && <>
                 <div className="relative w-[250px]">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search assets..." value={filters.search || ''} onChange={e => setFilters({
@@ -174,10 +161,6 @@ export default function HelpdeskAssets() {
                 </div>
               </>}
 
-            {activeTab === 'assigned' && <Button size="sm" onClick={() => setCreateDialogOpen(true)} className="gap-1.5 h-8 ml-auto">
-                <Plus className="h-3.5 w-3.5" />
-                <span className="text-sm">Add Asset</span>
-              </Button>}
           </div>
 
           {/* Overview Tab */}
@@ -305,15 +288,6 @@ export default function HelpdeskAssets() {
             <AssetsList filters={filters} />
           </TabsContent>
 
-          {/* Assigned Assets Tab */}
-          <TabsContent value="assigned" className="space-y-2 mt-2">
-            <AssetAssignmentsList />
-          </TabsContent>
-
-          {/* Available Assets Tab */}
-          <TabsContent value="available" className="space-y-2 mt-2">
-            <AssetsList status="available" filters={filters} />
-          </TabsContent>
 
           {/* Explore Tab */}
           <TabsContent value="explore" className="space-y-2 mt-2">
