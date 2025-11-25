@@ -34,6 +34,13 @@ import AssignAsset from "./pages/helpdesk/assets/assign";
 import ReturnAsset from "./pages/helpdesk/assets/return";
 import AssetReports from "./pages/helpdesk/assets/reports";
 import AssetSettings from "./pages/helpdesk/assets/settings";
+// Assets Explore imports
+import AssetsBulkActions from "./pages/helpdesk/assets/explore/bulk-actions";
+import AssetsLists from "./pages/helpdesk/assets/explore/lists";
+import AssetsReports from "./pages/helpdesk/assets/explore/reports";
+import AssetsTools from "./pages/helpdesk/assets/explore/tools";
+import AssetsAdvanced from "./pages/helpdesk/assets/explore/advanced";
+import AssetsFieldsSetup from "./pages/helpdesk/assets/explore/fields-setup";
 import HelpdeskKB from "./pages/helpdesk/kb";
 import HelpdeskProblemDetail from "./pages/helpdesk/problems/[id]";
 import HelpdeskChanges from "./pages/helpdesk/changes";
@@ -194,6 +201,13 @@ const App = () => {
             <Route path="assets/return" element={<ReturnAsset />} />
             <Route path="assets/reports" element={<AssetReports />} />
             <Route path="assets/settings" element={<AssetSettings />} />
+            {/* Assets Explore Routes */}
+            <Route path="assets/explore/bulk-actions" element={<AssetsBulkActions />} />
+            <Route path="assets/explore/lists" element={<AssetsLists />} />
+            <Route path="assets/explore/reports" element={<AssetsReports />} />
+            <Route path="assets/explore/tools" element={<AssetsTools />} />
+            <Route path="assets/explore/advanced" element={<AssetsAdvanced />} />
+            <Route path="assets/explore/fields-setup" element={<AssetsFieldsSetup />} />
             <Route path="subscription" element={<HelpdeskSubscriptionLayout />}>
               <Route index element={<HelpdeskSubscriptionDashboard />} />
               <Route path="tools" element={<HelpdeskSubscriptionTools />} />
