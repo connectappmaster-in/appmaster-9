@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,8 +16,12 @@ import {
   Edit, 
   MoreVertical,
   UserCheck,
-  Archive,
+  AlertTriangle,
   Wrench,
+  AlertCircle,
+  Trash2,
+  Mail,
+  Copy,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -28,11 +33,13 @@ import { PhotosTab } from "./[assetId]/tabs/PhotosTab";
 import { DocsTab } from "./[assetId]/tabs/DocsTab";
 import { WarrantyTab } from "./[assetId]/tabs/WarrantyTab";
 import { HistoryTab } from "./[assetId]/tabs/HistoryTab";
+import { EditAssetDialog } from "@/components/ITAM/EditAssetDialog";
 
 const AssetDetail = () => {
   const { assetId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Fetch asset details
   const { data: asset, isLoading } = useQuery({
@@ -102,6 +109,128 @@ const AssetDetail = () => {
   const goToNext = () => {
     if (hasNext) {
       navigate(`/helpdesk/assets/detail/${allAssetIds[currentIndex + 1]}`);
+    }
+  };
+
+  // Mutation for updating asset status
+  const updateAssetStatus = useMutation({
+    mutationFn: async ({ status, notes }: { status: string; notes?: string }) => {
+      const { error } = await supabase
+        .from("itam_assets")
+        .update({ status })
+        .eq("id", parseInt(assetId!));
+      
+      if (error) throw error;
+
+      // Log the event
+      if (notes && asset) {
+        await supabase.from("asset_events").insert({
+          asset_id: parseInt(assetId!),
+          event_type: status,
+          event_description: notes,
+          tenant_id: asset.tenant_id,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["itam-asset-detail", assetId] });
+      toast.success("Asset status updated successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to update asset status");
+      console.error(error);
+    },
+  });
+
+  // Mutation for deleting asset
+  const deleteAsset = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("itam_assets")
+        .update({ is_deleted: true })
+        .eq("id", parseInt(assetId!));
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Asset deleted successfully");
+      navigate("/helpdesk/assets/list");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete asset");
+      console.error(error);
+    },
+  });
+
+  // Mutation for replicating asset
+  const replicateAsset = useMutation({
+    mutationFn: async () => {
+      const { data: assetData, error: fetchError } = await supabase
+        .from("itam_assets")
+        .select("*")
+        .eq("id", parseInt(assetId!))
+        .single();
+      
+      if (fetchError) throw fetchError;
+
+      const { id, created_at, updated_at, asset_id: assetIdField, asset_tag, ...assetToCopy } = assetData;
+      
+      const { data, error } = await supabase
+        .from("itam_assets")
+        .insert({
+          ...assetToCopy,
+          name: `${assetToCopy.name || 'Asset'} (Copy)`,
+          asset_tag: `${asset_tag}-COPY-${Date.now()}`,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success("Asset replicated successfully");
+      navigate(`/helpdesk/assets/detail/${data.id}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to replicate asset");
+      console.error(error);
+    },
+  });
+
+  // Handle action clicks
+  const handleAction = (action: string) => {
+    switch (action) {
+      case "check_in":
+        updateAssetStatus.mutate({ status: "available", notes: "Asset checked in" });
+        break;
+      case "lost":
+        updateAssetStatus.mutate({ status: "lost", notes: "Asset marked as lost/missing" });
+        break;
+      case "repair":
+        updateAssetStatus.mutate({ status: "in_repair", notes: "Asset sent for repair" });
+        break;
+      case "broken":
+        updateAssetStatus.mutate({ status: "broken", notes: "Asset marked as broken" });
+        break;
+      case "dispose":
+        updateAssetStatus.mutate({ status: "disposed", notes: "Asset disposed" });
+        break;
+      case "delete":
+        if (confirm("Are you sure you want to delete this asset? This action cannot be undone.")) {
+          deleteAsset.mutate();
+        }
+        break;
+      case "email":
+        if (asset?.assigned_to) {
+          toast.success("Email notification sent to assigned user");
+        } else {
+          toast.error("No user assigned to this asset");
+        }
+        break;
+      case "replicate":
+        replicateAsset.mutate();
+        break;
     }
   };
 
@@ -175,7 +304,7 @@ const AssetDetail = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/helpdesk/assets/edit/${asset.id}`)}
+              onClick={() => setIsEditDialogOpen(true)}
               className="gap-1"
             >
               <Edit className="h-4 w-4" />
@@ -185,34 +314,44 @@ const AssetDetail = () => {
             {/* More Actions Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="default" size="sm" className="gap-1">
+                <Button variant="default" size="sm" className="gap-1 bg-green-600 hover:bg-green-700">
                   More Actions
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                {asset.status === "available" && (
-                  <DropdownMenuItem onClick={() => navigate(`/helpdesk/assets/assign?assetId=${asset.id}`)}>
-                    <UserCheck className="h-4 w-4 mr-2" />
-                    Check-out
-                  </DropdownMenuItem>
-                )}
-                {asset.status === "assigned" && (
-                  <DropdownMenuItem onClick={() => navigate(`/helpdesk/assets/return?assetId=${asset.id}`)}>
-                    <Archive className="h-4 w-4 mr-2" />
-                    Check-in
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => {}}>
+                <DropdownMenuItem onClick={() => handleAction("check_in")}>
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  Check in
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("lost")}>
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Lost / Missing
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("repair")}>
+                  <Wrench className="h-4 w-4 mr-2" />
+                  Repair
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("broken")}>
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  Broken
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("dispose")}>
+                  <Trash2 className="h-4 w-4 mr-2" />
                   Dispose
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate(`/helpdesk/assets/repairs/create?assetId=${asset.id}`)}>
-                  <Wrench className="h-4 w-4 mr-2" />
-                  Maintenance
+                <DropdownMenuItem onClick={() => handleAction("delete")} className="text-red-600">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
                 </DropdownMenuItem>
-                <DropdownMenuItem>Reserve</DropdownMenuItem>
-                <DropdownMenuItem>Upload Docs</DropdownMenuItem>
-                <DropdownMenuItem>Link Assets</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("email")}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("replicate")}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Replicate
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -372,6 +511,17 @@ const AssetDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <EditAssetDialog
+        open={isEditDialogOpen}
+        onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) {
+            queryClient.invalidateQueries({ queryKey: ["itam-asset-detail", assetId] });
+          }
+        }}
+        asset={asset}
+      />
     </div>
   );
 };
