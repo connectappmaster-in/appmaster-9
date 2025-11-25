@@ -15,6 +15,15 @@ import { toast } from "sonner";
 interface AssetsListProps {
   status?: string;
   filters?: Record<string, any>;
+  onSelectionChange?: (selectedIds: number[], bulkActions: BulkActions) => void;
+}
+
+interface BulkActions {
+  handleCheckOut: () => void;
+  handleCheckIn: () => void;
+  handleMaintenance: () => void;
+  handleDispose: () => void;
+  handleDelete: () => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -29,7 +38,7 @@ const statusColors: Record<string, string> = {
 type SortColumn = 'asset_id' | 'brand' | 'model' | 'description' | 'serial_number' | 'category' | 'status' | 'assigned_to';
 type SortDirection = 'asc' | 'desc' | null;
 
-export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
+export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsListProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editAsset, setEditAsset] = useState<any>(null);
@@ -65,17 +74,35 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedAssets(filteredAssets.map((asset: any) => asset.id));
+      const newSelection = filteredAssets.map((asset: any) => asset.id);
+      setSelectedAssets(newSelection);
+      notifyParent(newSelection);
     } else {
       setSelectedAssets([]);
+      notifyParent([]);
     }
   };
 
   const handleSelectAsset = (assetId: number, checked: boolean) => {
+    let newSelection: number[];
     if (checked) {
-      setSelectedAssets([...selectedAssets, assetId]);
+      newSelection = [...selectedAssets, assetId];
     } else {
-      setSelectedAssets(selectedAssets.filter(id => id !== assetId));
+      newSelection = selectedAssets.filter(id => id !== assetId);
+    }
+    setSelectedAssets(newSelection);
+    notifyParent(newSelection);
+  };
+
+  const notifyParent = (selectedIds: number[]) => {
+    if (onSelectionChange) {
+      onSelectionChange(selectedIds, {
+        handleCheckOut: handleBulkCheckOut,
+        handleCheckIn: handleBulkCheckIn,
+        handleMaintenance: handleBulkMaintenance,
+        handleDispose: handleBulkDispose,
+        handleDelete: handleBulkDelete,
+      });
     }
   };
 
@@ -238,36 +265,6 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
 
   return (
     <>
-      {selectedAssets.length > 0 && (
-        <div className="mb-3 p-3 border rounded-lg bg-muted/50 flex items-center justify-between">
-          <span className="text-sm font-medium">
-            {selectedAssets.length} asset(s) selected
-          </span>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleBulkCheckOut}>
-              <UserCheck className="h-3.5 w-3.5 mr-1.5" />
-              Check Out
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleBulkCheckIn}>
-              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
-              Check In
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleBulkMaintenance}>
-              <Wrench className="h-3.5 w-3.5 mr-1.5" />
-              Maintenance
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleBulkDispose}>
-              <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
-              Dispose
-            </Button>
-            <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-              Delete
-            </Button>
-          </div>
-        </div>
-      )}
-      
       <div className="rounded-md border">
         <Table>
           <TableHeader>

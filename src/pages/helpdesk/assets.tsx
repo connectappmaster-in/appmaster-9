@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Package, UserCheck, Search, LayoutDashboard, FileText, Wrench, Settings } from "lucide-react";
+import { Plus, Package, UserCheck, Search, LayoutDashboard, FileText, Wrench, Settings, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -11,11 +11,14 @@ import { CreateAssetDialog } from "@/components/ITAM/CreateAssetDialog";
 import { AssetAssignmentsList } from "@/components/ITAM/AssetAssignmentsList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 export default function HelpdeskAssets() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, any>>({});
+  const [selectedAssetIds, setSelectedAssetIds] = useState<number[]>([]);
+  const [bulkActions, setBulkActions] = useState<any>(null);
 
   // Fetch assets count for badges
   const {
@@ -114,6 +117,39 @@ export default function HelpdeskAssets() {
                 </div>
 
                 <div className="flex items-center gap-2 ml-auto">
+                  {selectedAssetIds.length > 0 && bulkActions && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline" className="h-8">
+                          Bulk Actions ({selectedAssetIds.length})
+                          <ChevronDown className="ml-1.5 h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={bulkActions.handleCheckOut}>
+                          <UserCheck className="mr-2 h-4 w-4" />
+                          Check Out
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={bulkActions.handleCheckIn}>
+                          <UserCheck className="mr-2 h-4 w-4" />
+                          Check In
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={bulkActions.handleMaintenance}>
+                          <Wrench className="mr-2 h-4 w-4" />
+                          Maintenance
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={bulkActions.handleDispose}>
+                          <Settings className="mr-2 h-4 w-4" />
+                          Dispose
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={bulkActions.handleDelete} className="text-destructive">
+                          <Package className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  
                   <Select value={filters.status || 'all'} onValueChange={value => setFilters({
                 ...filters,
                 status: value === 'all' ? null : value
@@ -284,7 +320,13 @@ export default function HelpdeskAssets() {
 
           {/* All Assets Tab */}
           <TabsContent value="all" className="space-y-2 mt-2">
-            <AssetsList filters={filters} />
+            <AssetsList 
+              filters={filters} 
+              onSelectionChange={(selectedIds, actions) => {
+                setSelectedAssetIds(selectedIds);
+                setBulkActions(actions);
+              }}
+            />
           </TabsContent>
 
 
