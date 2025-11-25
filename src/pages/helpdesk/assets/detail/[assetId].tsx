@@ -382,23 +382,23 @@ const AssetDetail = () => {
                   <table className="w-full">
                     <tbody>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Asset Tag ID</td>
+                        <td className="p-2 text-sm font-semibold">Asset Tag ID</td>
                         <td className="p-2 text-sm font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Purchase Date</td>
+                        <td className="p-2 text-sm font-semibold">Purchase Date</td>
                         <td className="p-2 text-sm">{asset.purchase_date ? format(new Date(asset.purchase_date), "dd/MM/yyyy") : '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Cost</td>
+                        <td className="p-2 text-sm font-semibold">Cost</td>
                         <td className="p-2 text-sm font-semibold">₹{asset.cost?.toLocaleString() || '0.00'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Brand</td>
+                        <td className="p-2 text-sm font-semibold">Brand</td>
                         <td className="p-2 text-sm">{asset.brand || '—'}</td>
                       </tr>
                       <tr>
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Model</td>
+                        <td className="p-2 text-sm font-semibold">Model</td>
                         <td className="p-2 text-sm">{asset.model || '—'}</td>
                       </tr>
                     </tbody>
@@ -410,27 +410,27 @@ const AssetDetail = () => {
                   <table className="w-full">
                     <tbody>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Site</td>
+                        <td className="p-2 text-sm font-semibold">Site</td>
                         <td className="p-2 text-sm text-primary hover:underline cursor-pointer">{asset.site || '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Location</td>
+                        <td className="p-2 text-sm font-semibold">Location</td>
                         <td className="p-2 text-sm">{asset.location || '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Category</td>
+                        <td className="p-2 text-sm font-semibold">Category</td>
                         <td className="p-2 text-sm">{asset.category || '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Department</td>
+                        <td className="p-2 text-sm font-semibold">Department</td>
                         <td className="p-2 text-sm">{asset.department || '—'}</td>
                       </tr>
                       <tr className="border-b">
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Assigned to</td>
+                        <td className="p-2 text-sm font-semibold">Assigned to</td>
                         <td className="p-2 text-sm text-primary hover:underline cursor-pointer">{asset.assigned_to || '—'}</td>
                       </tr>
                       <tr>
-                        <td className="p-2 text-sm font-semibold bg-muted/50">Status</td>
+                        <td className="p-2 text-sm font-semibold">Status</td>
                         <td className="p-2 text-sm">
                           <Badge variant="outline" className={`${getStatusColor(asset.status) === 'default' ? 'bg-green-100 text-green-800' : ''} capitalize`}>
                             {asset.status === 'assigned' ? 'Checked out' : asset.status || 'available'}
