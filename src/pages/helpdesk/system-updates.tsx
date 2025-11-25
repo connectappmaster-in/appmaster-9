@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
   Download, 
   Search, 
@@ -13,7 +16,13 @@ import {
   Plus,
   Eye,
   Calendar,
-  RotateCcw
+  RotateCcw,
+  LayoutDashboard,
+  Server,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock
 } from "lucide-react";
 import { SystemUpdate } from "@/components/SystemUpdates/UpdateCard";
 import { ScheduleUpdateDialog } from "@/components/SystemUpdates/ScheduleUpdateDialog";
@@ -22,6 +31,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 
 export default function SystemUpdates() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,6 +42,14 @@ export default function SystemUpdates() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [updates, setUpdates] = useState<SystemUpdate[]>([]);
+
+  // Mock stats - in production these would come from the database
+  const stats = {
+    pending: updates.filter(u => u.status === 'pending').length,
+    installing: updates.filter(u => u.status === 'installing').length,
+    installed: updates.filter(u => u.status === 'installed').length,
+    failed: updates.filter(u => u.status === 'failed').length,
+  };
 
   const filteredUpdates = updates.filter(update => {
     const matchesStatus = statusFilter === 'all' || update.status === statusFilter;
@@ -133,9 +152,22 @@ export default function SystemUpdates() {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
-        {/* Compact Single Row Header - Match Tickets Layout */}
-        <div className="flex items-center gap-2 flex-wrap mb-2">
-          <div className="relative w-[250px]">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="updates" className="gap-1.5 px-3 text-sm h-7">
+                <Download className="h-3.5 w-3.5" />
+                Updates
+              </TabsTrigger>
+            </TabsList>
+
+            {activeTab === 'updates' && (
+              <>
+                <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search updates..."
@@ -208,10 +240,59 @@ export default function SystemUpdates() {
               <Settings className="h-3.5 w-3.5" />
             </Button>
           </div>
-        </div>
+              </>
+            )}
+          </div>
 
-        {/* Table View - Match Tickets Layout */}
-        {filteredUpdates.length === 0 ? (
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-3 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("updates")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    <span className="text-2xl font-bold">{stats.pending}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Pending Updates</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("updates")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <RefreshCw className="h-4 w-4 text-yellow-600" />
+                    <span className="text-2xl font-bold">{stats.installing}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">In Progress</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("updates")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">{stats.installed}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Completed</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("updates")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                    <span className="text-2xl font-bold">{stats.failed}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Failed</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Updates Tab */}
+          <TabsContent value="updates" className="space-y-2 mt-2">
+            {/* Table View - Match Tickets Layout */}
+            {filteredUpdates.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 border border-dashed rounded-lg">
             <div className="rounded-full bg-muted p-4 mb-3">
               <Download className="h-8 w-8 text-muted-foreground" />
@@ -356,6 +437,8 @@ export default function SystemUpdates() {
             </Table>
           </div>
         )}
+          </TabsContent>
+        </Tabs>
 
         {/* Dialogs */}
         <ScheduleUpdateDialog
