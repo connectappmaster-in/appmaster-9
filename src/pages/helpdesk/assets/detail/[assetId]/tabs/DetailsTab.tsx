@@ -8,117 +8,90 @@ interface DetailsTabProps {
 
 export const DetailsTab = ({ asset }: DetailsTabProps) => {
   return (
-    <div className="space-y-6">
-      {/* Asset Details Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Asset Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <h3 className="text-sm font-semibold mb-3">Miscellaneous</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <p className="text-sm text-muted-foreground">Serial No</p>
-              <p className="text-sm font-medium">{asset.serial_number || '—'}</p>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <p className="text-sm text-muted-foreground">Purchased from</p>
-              <p className="text-sm font-medium text-primary hover:underline cursor-pointer">
-                {asset.purchased_from || '—'}
-              </p>
-            </div>
+    <Card>
+      <CardContent className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+          {/* Miscellaneous Section */}
+          <div className="col-span-2 mb-2">
+            <h3 className="text-sm font-semibold mb-2">Miscellaneous</h3>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Custom Fields Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Custom fields</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Asset Configuration</p>
-                <p className="text-sm">{asset.asset_configuration || '—'}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Asset Classification</p>
-                <p className="text-sm">{asset.classification || 'Internal'}</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Mouse</p>
-                <p className="text-sm">—</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Keyboard</p>
-                <p className="text-sm">—</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Headphone</p>
-                <p className="text-sm">—</p>
-              </div>
-            </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Serial No</span>
+            <span className="font-medium">{asset.serial_number || '—'}</span>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Check-out Details */}
-      {asset.assigned_to && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Check out</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Assigned to</p>
-                <p className="text-sm font-medium text-primary hover:underline cursor-pointer">
-                  {asset.assigned_to}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Check-out Notes</p>
-                <p className="text-sm">{asset.checkout_notes || '—'}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Check-out Date</p>
-                <p className="text-sm">{asset.checkout_date ? format(new Date(asset.checkout_date), "dd/MM/yyyy") : '—'}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <p className="text-sm text-muted-foreground">Due date</p>
-                <p className="text-sm">{asset.due_date ? format(new Date(asset.due_date), "dd/MM/yyyy") : 'No due date'}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Creation Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Creation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <p className="text-sm text-muted-foreground">Date Created</p>
-              <p className="text-sm">
-                {asset.created_at ? format(new Date(asset.created_at), "dd/MM/yyyy HH:mm a") : '—'}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <p className="text-sm text-muted-foreground">Created by</p>
-              <p className="text-sm font-medium text-primary hover:underline cursor-pointer">
-                {asset.created_by || '—'}
-              </p>
-            </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Purchased from</span>
+            <span className="font-medium text-primary hover:underline cursor-pointer">{asset.purchased_from || '—'}</span>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          {/* Custom Fields Section */}
+          <div className="col-span-2 mt-3 mb-2">
+            <h3 className="text-sm font-semibold mb-2">Custom fields</h3>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Asset Configuration</span>
+            <span>{asset.asset_configuration || '—'}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Mouse</span>
+            <span>—</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Asset Classification</span>
+            <span>{asset.classification || 'Internal'}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Keyboard</span>
+            <span>—</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground" />
+            <span />
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Headphone</span>
+            <span>—</span>
+          </div>
+
+          {/* Check-out Section */}
+          {asset.assigned_to && (
+            <>
+              <div className="col-span-2 mt-3 mb-2">
+                <h3 className="text-sm font-semibold mb-2">Check out</h3>
+              </div>
+              <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Assigned to</span>
+                <span className="font-medium text-primary hover:underline cursor-pointer">{asset.assigned_to}</span>
+              </div>
+              <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Check-out Notes</span>
+                <span>{asset.checkout_notes || '—'}</span>
+              </div>
+              <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Check-out Date</span>
+                <span>{asset.checkout_date ? format(new Date(asset.checkout_date), "dd/MM/yyyy") : '—'}</span>
+              </div>
+              <div className="flex justify-between text-sm py-1">
+                <span className="text-muted-foreground">Due date</span>
+                <span>{asset.due_date ? format(new Date(asset.due_date), "dd/MM/yyyy") : 'No due date'}</span>
+              </div>
+            </>
+          )}
+
+          {/* Creation Section */}
+          <div className="col-span-2 mt-3 mb-2">
+            <h3 className="text-sm font-semibold mb-2">Creation</h3>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Date Created</span>
+            <span>{asset.created_at ? format(new Date(asset.created_at), "dd/MM/yyyy HH:mm a") : '—'}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span className="text-muted-foreground">Created by</span>
+            <span className="font-medium text-primary hover:underline cursor-pointer">{asset.created_by || '—'}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
