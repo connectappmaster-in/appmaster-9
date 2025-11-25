@@ -113,55 +113,57 @@ export const PhotosTab = ({ assetId }: PhotosTabProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <label htmlFor="photo-upload">
-          <Button variant="outline" disabled={uploading} asChild>
-            <span className="cursor-pointer">
-              {uploading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Upload className="mr-2 h-4 w-4" />
-              )}
-              Upload Photo
-            </span>
-          </Button>
-        </label>
-        <Input
-          id="photo-upload"
-          type="file"
-          accept=".jpg,.jpeg,.gif,.png"
-          onChange={handlePhotoUpload}
-          className="hidden"
-        />
-      </div>
+    <Card>
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="photo-upload">
+              <Button variant="outline" size="sm" disabled={uploading} asChild>
+                <span className="cursor-pointer">
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
+                  Upload Photo
+                </span>
+              </Button>
+            </label>
+            <Input
+              id="photo-upload"
+              type="file"
+              accept=".jpg,.jpeg,.gif,.png"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+          </div>
 
-      {(!photos || photos.length === 0) ? (
-        <div className="text-center py-8 text-muted-foreground">No photos uploaded</div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
-            <Card key={photo.id} className="overflow-hidden">
-              <CardContent className="p-0 relative group">
-                <img
-                  src={photo.photo_url}
-                  alt="Asset"
-                  className="w-full h-48 object-cover"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => deletePhoto.mutate(photo.id)}
-                  disabled={deletePhoto.isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+          {(!photos || photos.length === 0) ? (
+            <div className="text-center py-6 text-sm text-muted-foreground">No photos uploaded</div>
+          ) : (
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {photos.map((photo) => (
+                <div key={photo.id} className="relative group aspect-square">
+                  <img
+                    src={photo.photo_url}
+                    alt="Asset"
+                    className="w-full h-full object-cover rounded border"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => deletePhoto.mutate(photo.id)}
+                    disabled={deletePhoto.isPending}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };

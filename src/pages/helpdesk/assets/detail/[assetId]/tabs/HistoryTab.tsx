@@ -61,25 +61,25 @@ export const HistoryTab = ({ assetId }: HistoryTabProps) => {
   }
 
   return (
-    <div className="space-y-4">
-      {history.map((item, index) => (
-        <Card key={`${item.type}-${item.id}-${index}`}>
-          <CardContent className="pt-6">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+    <Card>
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          {history.map((item, index) => (
+            <div key={`${item.type}-${item.id}-${index}`} className="flex gap-3 py-2 border-b last:border-0">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                 {getIcon(item.type)}
               </div>
-              <div className="flex-1">
-                <p className="font-medium">{getTitle(item)}</p>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{getTitle(item)}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                   <Clock className="h-3 w-3" />
                   {format(new Date(item.date), "dd/MM/yyyy HH:mm")}
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

@@ -110,76 +110,80 @@ export const WarrantyTab = ({ assetId }: WarrantyTabProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Warranty Information</CardTitle>
-            {!isEditing && (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>
-                Edit
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold">Warranty Information</h3>
+          {!isEditing && (
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+          )}
+        </div>
+        <div>
           {isEditing ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="warranty_start">Warranty Start</Label>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="warranty_start" className="text-xs">Warranty Start</Label>
                   <Input
                     id="warranty_start"
                     type="date"
+                    className="h-9"
                     value={formData.warranty_start}
                     onChange={(e) => setFormData({ ...formData, warranty_start: e.target.value })}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="warranty_end">Warranty End</Label>
+                <div>
+                  <Label htmlFor="warranty_end" className="text-xs">Warranty End</Label>
                   <Input
                     id="warranty_end"
                     type="date"
+                    className="h-9"
                     value={formData.warranty_end}
                     onChange={(e) => setFormData({ ...formData, warranty_end: e.target.value })}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="amc_start">AMC Start</Label>
+                <div>
+                  <Label htmlFor="amc_start" className="text-xs">AMC Start</Label>
                   <Input
                     id="amc_start"
                     type="date"
+                    className="h-9"
                     value={formData.amc_start}
                     onChange={(e) => setFormData({ ...formData, amc_start: e.target.value })}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="amc_end">AMC End</Label>
+                <div>
+                  <Label htmlFor="amc_end" className="text-xs">AMC End</Label>
                   <Input
                     id="amc_end"
                     type="date"
+                    className="h-9"
                     value={formData.amc_end}
                     onChange={(e) => setFormData({ ...formData, amc_end: e.target.value })}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
+              <div>
+                <Label htmlFor="notes" className="text-xs">Notes</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={4}
+                  rows={3}
+                  className="text-sm"
                 />
               </div>
               <div className="flex gap-2">
-                <Button type="submit" disabled={saveWarranty.isPending}>
+                <Button type="submit" size="sm" disabled={saveWarranty.isPending}>
                   {saveWarranty.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   onClick={() => {
                     setIsEditing(false);
                     if (warranty) {
@@ -198,43 +202,43 @@ export const WarrantyTab = ({ assetId }: WarrantyTabProps) => {
               </div>
             </form>
           ) : (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Warranty Start</p>
-                  <p className="font-medium">
+                  <p className="text-xs text-muted-foreground">Warranty Start</p>
+                  <p className="text-sm font-medium">
                     {warranty?.warranty_start ? format(new Date(warranty.warranty_start), "dd/MM/yyyy") : "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Warranty End</p>
+                  <p className="text-xs text-muted-foreground">Warranty End</p>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">
+                    <p className="text-sm font-medium">
                       {warranty?.warranty_end ? format(new Date(warranty.warranty_end), "dd/MM/yyyy") : "N/A"}
                     </p>
                     {warranty?.warranty_end && getExpiryWarning(warranty.warranty_end) && (
-                      <span className={`text-sm flex items-center gap-1 ${getExpiryWarning(warranty.warranty_end)?.color}`}>
-                        <AlertTriangle className="h-4 w-4" />
+                      <span className={`text-xs flex items-center gap-1 ${getExpiryWarning(warranty.warranty_end)?.color}`}>
+                        <AlertTriangle className="h-3 w-3" />
                         {getExpiryWarning(warranty.warranty_end)?.message}
                       </span>
                     )}
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">AMC Start</p>
-                  <p className="font-medium">
+                  <p className="text-xs text-muted-foreground">AMC Start</p>
+                  <p className="text-sm font-medium">
                     {warranty?.amc_start ? format(new Date(warranty.amc_start), "dd/MM/yyyy") : "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">AMC End</p>
+                  <p className="text-xs text-muted-foreground">AMC End</p>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">
+                    <p className="text-sm font-medium">
                       {warranty?.amc_end ? format(new Date(warranty.amc_end), "dd/MM/yyyy") : "N/A"}
                     </p>
                     {warranty?.amc_end && getExpiryWarning(warranty.amc_end) && (
-                      <span className={`text-sm flex items-center gap-1 ${getExpiryWarning(warranty.amc_end)?.color}`}>
-                        <AlertTriangle className="h-4 w-4" />
+                      <span className={`text-xs flex items-center gap-1 ${getExpiryWarning(warranty.amc_end)?.color}`}>
+                        <AlertTriangle className="h-3 w-3" />
                         {getExpiryWarning(warranty.amc_end)?.message}
                       </span>
                     )}
@@ -243,14 +247,14 @@ export const WarrantyTab = ({ assetId }: WarrantyTabProps) => {
               </div>
               {warranty?.notes && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Notes</p>
-                  <p className="font-medium whitespace-pre-wrap">{warranty.notes}</p>
+                  <p className="text-xs text-muted-foreground">Notes</p>
+                  <p className="text-sm whitespace-pre-wrap">{warranty.notes}</p>
                 </div>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

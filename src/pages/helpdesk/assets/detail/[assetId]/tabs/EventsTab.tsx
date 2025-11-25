@@ -43,35 +43,33 @@ export const EventsTab = ({ assetId }: EventsTabProps) => {
   }
 
   return (
-    <div className="space-y-4">
-      {events.map((event) => (
-        <Card key={event.id}>
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-2 flex-1">
-                <div className="flex items-center gap-2">
-                  <Badge variant={getEventBadgeVariant(event.event_type)}>
-                    {event.event_type}
-                  </Badge>
-                  <p className="font-medium">{event.event_description}</p>
+    <Card>
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          {events.map((event) => (
+            <div key={event.id} className="flex items-center justify-between py-2 border-b last:border-0">
+              <div className="flex items-center gap-3 flex-1">
+                <Badge variant={getEventBadgeVariant(event.event_type)} className="text-xs">
+                  {event.event_type}
+                </Badge>
+                <span className="text-sm">{event.event_description}</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {format(new Date(event.performed_at), "dd/MM/yyyy HH:mm")}
                 </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                {event.performed_by && (
                   <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {format(new Date(event.performed_at), "dd/MM/yyyy HH:mm")}
+                    <User className="h-3 w-3" />
+                    {event.performed_by}
                   </div>
-                  {event.performed_by && (
-                    <div className="flex items-center gap-1">
-                      <User className="h-4 w-4" />
-                      {event.performed_by}
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
