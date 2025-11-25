@@ -81,8 +81,8 @@ const AssetDetail = () => {
   }
 
   return (
-    <div className="w-full">
-      <div className="max-w-7xl mx-auto space-y-3">
+    <div className="w-full h-full">
+      <div className="h-full space-y-3 p-4">
         {/* Header */}
         <div>
           <h1 className="text-lg font-bold">Asset View</h1>
@@ -91,11 +91,11 @@ const AssetDetail = () => {
 
         {/* Top Section with Photo and Details */}
         <Card>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <CardContent className="p-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               {/* Asset Photo */}
               <div className="lg:col-span-1">
-                <div className="aspect-square rounded-lg border bg-muted flex items-center justify-center overflow-hidden max-h-[280px]">
+                <div className="aspect-square rounded-lg border bg-muted flex items-center justify-center overflow-hidden max-h-[220px]">
                   {asset.photo_url ? (
                     <img src={asset.photo_url} alt={asset.name} className="w-full h-full object-cover" />
                   ) : (
@@ -109,7 +109,7 @@ const AssetDetail = () => {
 
               {/* Asset Details Grid */}
               <div className="lg:col-span-2">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                   <div>
                     <p className="text-sm font-semibold text-muted-foreground mb-1">Asset Tag ID</p>
                     <p className="text-base font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</p>
@@ -163,7 +163,7 @@ const AssetDetail = () => {
         </Card>
 
         {/* Action Buttons Row */}
-        <div className="flex items-center gap-2 flex-wrap py-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
             PRINT
@@ -207,8 +207,8 @@ const AssetDetail = () => {
         </div>
 
         {/* Tabs Section */}
-        <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid grid-cols-6 lg:grid-cols-11 w-full h-9">
+        <Tabs defaultValue="details" className="w-full pb-2">
+          <TabsList className="grid grid-cols-6 lg:grid-cols-11 w-full h-8">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="photos">Photos</TabsTrigger>
@@ -222,67 +222,67 @@ const AssetDetail = () => {
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="details" className="mt-3">
+          <TabsContent value="details" className="mt-2">
             <DetailsTab asset={asset} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-3">
+          <TabsContent value="events" className="mt-2">
             <EventsTab assetId={asset.id} />
           </TabsContent>
 
-          <TabsContent value="photos" className="mt-3">
+          <TabsContent value="photos" className="mt-2">
             <PhotosTab assetId={asset.id} />
           </TabsContent>
 
-          <TabsContent value="docs" className="mt-3">
+          <TabsContent value="docs" className="mt-2">
             <DocsTab assetId={asset.id} />
           </TabsContent>
 
-          <TabsContent value="warranty" className="mt-3">
+          <TabsContent value="warranty" className="mt-2">
             <WarrantyTab assetId={asset.id} />
           </TabsContent>
 
-          <TabsContent value="linking" className="mt-3">
+          <TabsContent value="linking" className="mt-2">
             <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Linking feature coming soon</p>
+              <CardContent className="pt-3">
+                <p className="text-center text-muted-foreground py-4">Linking feature coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="maintenance" className="mt-3">
+          <TabsContent value="maintenance" className="mt-2">
             <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Maintenance records coming soon</p>
+              <CardContent className="pt-3">
+                <p className="text-center text-muted-foreground py-4">Maintenance records coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="contracts" className="mt-3">
+          <TabsContent value="contracts" className="mt-2">
             <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Contracts feature coming soon</p>
+              <CardContent className="pt-3">
+                <p className="text-center text-muted-foreground py-4">Contracts feature coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="reserve" className="mt-3">
+          <TabsContent value="reserve" className="mt-2">
             <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Reservation system coming soon</p>
+              <CardContent className="pt-3">
+                <p className="text-center text-muted-foreground py-4">Reservation system coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="audit" className="mt-3">
+          <TabsContent value="audit" className="mt-2">
             <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Audit logs coming soon</p>
+              <CardContent className="pt-3">
+                <p className="text-center text-muted-foreground py-4">Audit logs coming soon</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="history" className="mt-3">
+          <TabsContent value="history" className="mt-2">
             <HistoryTab assetId={asset.id} />
           </TabsContent>
         </Tabs>
