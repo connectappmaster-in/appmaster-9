@@ -126,7 +126,6 @@ export default function HelpdeskAssets() {
                       <SelectItem value="available">Available</SelectItem>
                       <SelectItem value="assigned">Assigned</SelectItem>
                       <SelectItem value="in_repair">In Repair</SelectItem>
-                      <SelectItem value="retired">Retired</SelectItem>
                       <SelectItem value="lost">Lost</SelectItem>
                       <SelectItem value="disposed">Disposed</SelectItem>
                     </SelectContent>
