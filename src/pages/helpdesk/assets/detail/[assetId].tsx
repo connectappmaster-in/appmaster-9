@@ -377,7 +377,7 @@ const AssetDetail = () => {
 
               {/* Asset Details Grid */}
               <div className="lg:col-span-2">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                <div className="grid grid-cols-3 gap-x-4 gap-y-2">
                   <p className="text-sm">
                     <span className="font-semibold text-muted-foreground">Asset Tag ID: </span>
                     <span className="font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</span>
