@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Package, Eye, Edit, UserPlus, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { EditAssetDialog } from "./EditAssetDialog";
 import { AssignAssetDialog } from "./AssignAssetDialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,6 +25,7 @@ const statusColors: Record<string, string> = {
 };
 
 export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
+  const navigate = useNavigate();
   const [editAsset, setEditAsset] = useState<any>(null);
   const [assignAsset, setAssignAsset] = useState<any>(null);
 
@@ -127,8 +129,12 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAssets.map((asset: any) => (
-              <TableRow key={asset.id} className="cursor-pointer hover:bg-muted/50">
+          {filteredAssets.map((asset: any) => (
+              <TableRow 
+                key={asset.id} 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+              >
                 <TableCell className="py-2">
                   <div className="font-medium text-sm">{asset.asset_id || '—'}</div>
                 </TableCell>
@@ -169,23 +175,30 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <MoreHorizontal className="h-3.5 w-3.5" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => {
-                        const navigate = (window as any).navigate || (() => {});
-                        window.location.href = `/helpdesk/assets/detail/${asset.id}`;
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/helpdesk/assets/detail/${asset.id}`);
                       }}>
                         <Eye className="mr-2 h-4 w-4" />
                         View
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setEditAsset(asset)}>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setEditAsset(asset);
+                      }}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setAssignAsset(asset)}>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAssignAsset(asset);
+                      }}>
                         <UserPlus className="mr-2 h-4 w-4" />
                         Check In
                       </DropdownMenuItem>
