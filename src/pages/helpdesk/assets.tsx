@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Package, UserCheck, Search } from "lucide-react";
+import { Plus, Package, UserCheck, Search, LayoutDashboard, FileText, Wrench, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export default function HelpdeskAssets() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("overview");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, any>>({});
 
@@ -100,6 +100,10 @@ export default function HelpdeskAssets() {
           {/* Compact Single Row Header */}
           <div className="flex items-center gap-2 flex-wrap">
             <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="all" className="gap-1.5 px-3 text-sm h-7">
                 <Package className="h-3.5 w-3.5" />
                 All Assets
@@ -199,6 +203,139 @@ export default function HelpdeskAssets() {
               </Button>
             )}
           </div>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-4 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+              {/* Total Assets */}
+              <div className="p-6 border rounded-lg bg-card hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab("all")}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Assets</div>
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-semibold text-foreground">{allAssets.length}</h3>
+              </div>
+
+              {/* Assigned Assets */}
+              <div className="p-6 border rounded-lg bg-card hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab("assigned")}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Assigned</div>
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-sm">
+                    <UserCheck className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-semibold text-foreground">{assignments.length}</h3>
+              </div>
+
+              {/* Available Assets */}
+              <div className="p-6 border rounded-lg bg-card hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab("available")}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Available</div>
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-semibold text-foreground">{availableAssets.length}</h3>
+              </div>
+
+              {/* In Maintenance */}
+              <div className="p-6 border rounded-lg bg-card hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">In Repair</div>
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-sm">
+                    <Wrench className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-semibold text-foreground">{maintenanceAssets.length}</h3>
+              </div>
+            </div>
+
+            {/* Explore Sections Overview */}
+            <div className="px-4 pb-4">
+              <h3 className="text-lg font-semibold mb-4">Quick Access</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {/* Bulk Actions */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/bulk-actions')}
+                >
+                  <Package className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Bulk Actions</div>
+                    <div className="text-xs text-muted-foreground">Check Out, Check In, Dispose, Maintenance</div>
+                  </div>
+                </Button>
+
+                {/* Lists */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/lists')}
+                >
+                  <FileText className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Lists</div>
+                    <div className="text-xs text-muted-foreground">Maintenances, Warranties</div>
+                  </div>
+                </Button>
+
+                {/* Reports */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/reports')}
+                >
+                  <FileText className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Reports</div>
+                    <div className="text-xs text-muted-foreground">Asset, Audit, Check-Out, Maintenance</div>
+                  </div>
+                </Button>
+
+                {/* Tools */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/tools')}
+                >
+                  <Settings className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Tools</div>
+                    <div className="text-xs text-muted-foreground">Import, Export, Galleries, Audit</div>
+                  </div>
+                </Button>
+
+                {/* Advanced */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/advanced')}
+                >
+                  <Settings className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Advanced</div>
+                    <div className="text-xs text-muted-foreground">Employees, Users</div>
+                  </div>
+                </Button>
+
+                {/* Fields Setup */}
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/helpdesk/assets/explore/fields-setup')}
+                >
+                  <Settings className="h-5 w-5" />
+                  <div className="text-center">
+                    <div className="font-semibold">Fields Setup</div>
+                    <div className="text-xs text-muted-foreground">Company, Sites, Categories, Tag Format</div>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
 
           {/* All Assets Tab */}
           <TabsContent value="all" className="space-y-2 mt-2">
