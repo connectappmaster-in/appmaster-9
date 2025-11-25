@@ -66,7 +66,7 @@ const AssetDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <p>Loading asset details...</p>
       </div>
     );
@@ -74,22 +74,19 @@ const AssetDetail = () => {
 
   if (!asset) {
     return (
-      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <p>Asset not found</p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen overflow-y-auto bg-background">
-      <div className="max-w-7xl mx-auto p-4 space-y-3">
-        {/* Header with Back Button */}
-        <div className="flex items-center gap-3">
-          <BackButton />
-          <div>
-            <h1 className="text-lg font-bold">Asset View</h1>
-            <p className="text-xs text-muted-foreground">{asset.category || 'Asset'}</p>
-          </div>
+    <div className="w-full">
+      <div className="max-w-7xl mx-auto space-y-3">
+        {/* Header */}
+        <div>
+          <h1 className="text-lg font-bold">Asset View</h1>
+          <p className="text-xs text-muted-foreground">{asset.category || 'Asset'}</p>
         </div>
 
         {/* Top Section with Photo and Details */}
@@ -210,7 +207,7 @@ const AssetDetail = () => {
         </div>
 
         {/* Tabs Section */}
-        <Tabs defaultValue="details" className="w-full flex-1">
+        <Tabs defaultValue="details" className="w-full">
           <TabsList className="grid grid-cols-6 lg:grid-cols-11 w-full h-9">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
