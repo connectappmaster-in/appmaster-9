@@ -158,19 +158,19 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             {/* Basic Info Section */}
             <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase">Basic Info</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground uppercase">Basic Info</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <FormField
                   control={form.control}
                   name="asset_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset ID *</FormLabel>
+                      <FormLabel className="text-xs">Asset ID *</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., ASSET-001" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -182,9 +182,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="brand"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Brand *</FormLabel>
+                      <FormLabel className="text-xs">Make *</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Dell, HP, Lenovo" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -196,9 +196,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="model"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Model *</FormLabel>
+                      <FormLabel className="text-xs">Model *</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Latitude 5420" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -210,9 +210,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="text-xs">Description</FormLabel>
                       <FormControl>
-                        <Input placeholder="Brief description" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -224,9 +224,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="asset_configuration"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Asset Configuration</FormLabel>
+                      <FormLabel className="text-xs">Asset Configuration</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., i7, 16GB RAM, 512GB SSD" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,16 +237,16 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
 
             {/* Purchase Section */}
             <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase">Purchase</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground uppercase">Purchase</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <FormField
                   control={form.control}
                   name="purchase_date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Purchase Date *</FormLabel>
+                      <FormLabel className="text-xs">Purchase Date *</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -258,9 +258,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="cost"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cost (₹) *</FormLabel>
+                      <FormLabel className="text-xs">Cost (₹) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                        <Input type="number" step="0.01" className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -272,9 +272,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="serial_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Serial No</FormLabel>
+                      <FormLabel className="text-xs">Serial No</FormLabel>
                       <FormControl>
-                        <Input placeholder="Serial number" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -286,9 +286,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="purchased_from"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Purchased From</FormLabel>
+                      <FormLabel className="text-xs">Purchased From</FormLabel>
                       <FormControl>
-                        <Input placeholder="Vendor name" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -299,18 +299,18 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
 
             {/* Classification Section */}
             <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase">Classification</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground uppercase">Classification</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <FormField
                   control={form.control}
                   name="classification"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Asset Classification</FormLabel>
+                      <FormLabel className="text-xs">Asset Classification</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select classification" />
+                          <SelectTrigger className="h-8">
+                            <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -328,16 +328,16 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
 
             {/* Organization Section */}
             <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase">Organization</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground uppercase">Organization</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <FormField
                   control={form.control}
                   name="site"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Site</FormLabel>
+                      <FormLabel className="text-xs">Site</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Head Office" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -349,9 +349,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location</FormLabel>
+                      <FormLabel className="text-xs">Location</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Floor 3, Room 301" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -363,11 +363,11 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category *</FormLabel>
+                      <FormLabel className="text-xs">Category *</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
+                          <SelectTrigger className="h-8">
+                            <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -393,9 +393,9 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
                   name="department"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Department</FormLabel>
+                      <FormLabel className="text-xs">Department</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., IT, HR, Finance" {...field} />
+                        <Input className="h-8" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -406,17 +406,17 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
 
             {/* Photo Section */}
             <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase">Photo (Optional)</h3>
+              <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground uppercase">Photo (Optional)</h3>
               <FormField
                 control={form.control}
                 name="photo_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Add Image</FormLabel>
+                    <FormLabel className="text-xs">Add Image</FormLabel>
                     <FormControl>
                       <Input 
                         type="text" 
-                        placeholder="Enter image URL or upload to storage" 
+                        className="h-8"
                         {...field} 
                       />
                     </FormControl>
@@ -426,16 +426,17 @@ export const CreateAssetDialog = ({ open, onOpenChange }: CreateAssetDialogProps
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t">
+            <div className="flex justify-end gap-2 pt-2 border-t">
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 onClick={() => onOpenChange(false)}
                 disabled={createAsset.isPending}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createAsset.isPending}>
+              <Button type="submit" size="sm" disabled={createAsset.isPending}>
                 {createAsset.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Asset
               </Button>
