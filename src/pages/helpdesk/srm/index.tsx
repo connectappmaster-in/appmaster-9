@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FileText, Calendar, Search } from "lucide-react";
+import { Plus, FileText, Calendar, Search, LayoutDashboard, CheckCircle, Clock, AlertCircle, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { useSRMStats } from "@/hooks/useSRMStats";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -18,7 +20,8 @@ import { ChangeRequestDetailsView } from "@/components/SRM/ChangeRequestDetailsV
 type ViewMode = 'list' | 'form' | 'details';
 
 export default function ServiceRequests() {
-  const [activeTab, setActiveTab] = useState("requests");
+  const [activeTab, setActiveTab] = useState("overview");
+  const { data: stats } = useSRMStats();
   const [filters, setFilters] = useState<Record<string, any>>({});
   
   // View state for Service Requests
@@ -103,6 +106,10 @@ export default function ServiceRequests() {
           {/* Compact Single Row Header */}
           <div className="flex items-center gap-2 flex-wrap">
             <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="requests" className="gap-1.5 px-3 text-sm h-7">
                 <FileText className="h-3.5 w-3.5" />
                 Service Requests
@@ -191,6 +198,51 @@ export default function ServiceRequests() {
               </Button>
             )}
           </div>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-3 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("requests")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="text-2xl font-bold">{stats?.total || 0}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total Service Requests</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("requests")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Clock className="h-4 w-4 text-yellow-600" />
+                    <span className="text-2xl font-bold">{stats?.pending || 0}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Pending Requests</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("requests")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <span className="text-2xl font-bold">{stats?.inProgress || 0}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">In Progress</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("requests")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">{stats?.fulfilled || 0}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Fulfilled</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Service Requests Tab */}
           <TabsContent value="requests" className="space-y-2 mt-2">
