@@ -1,14 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, Eye, Edit, UserPlus, MoreHorizontal, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
+import { Package, Eye, Edit, UserPlus, MoreHorizontal, ArrowUpDown, ChevronUp, ChevronDown, Trash2, UserCheck, Wrench, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EditAssetDialog } from "./EditAssetDialog";
 import { AssignAssetDialog } from "./AssignAssetDialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface AssetsListProps {
   status?: string;
@@ -29,10 +31,12 @@ type SortDirection = 'asc' | 'desc' | null;
 
 export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [editAsset, setEditAsset] = useState<any>(null);
   const [assignAsset, setAssignAsset] = useState<any>(null);
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [selectedAssets, setSelectedAssets] = useState<number[]>([]);
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -57,6 +61,86 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
       return <ChevronUp className="ml-1 h-3 w-3" />;
     }
     return <ChevronDown className="ml-1 h-3 w-3" />;
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedAssets(filteredAssets.map((asset: any) => asset.id));
+    } else {
+      setSelectedAssets([]);
+    }
+  };
+
+  const handleSelectAsset = (assetId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedAssets([...selectedAssets, assetId]);
+    } else {
+      setSelectedAssets(selectedAssets.filter(id => id !== assetId));
+    }
+  };
+
+  const handleBulkCheckOut = async () => {
+    toast.success(`Checking out ${selectedAssets.length} asset(s)`);
+    setSelectedAssets([]);
+  };
+
+  const handleBulkCheckIn = async () => {
+    toast.success(`Checking in ${selectedAssets.length} asset(s)`);
+    setSelectedAssets([]);
+  };
+
+  const handleBulkMaintenance = async () => {
+    try {
+      const { error } = await supabase
+        .from('itam_assets')
+        .update({ status: 'in_repair' })
+        .in('id', selectedAssets);
+
+      if (error) throw error;
+      
+      toast.success(`${selectedAssets.length} asset(s) marked for maintenance`);
+      setSelectedAssets([]);
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    } catch (error: any) {
+      toast.error("Failed to update assets: " + error.message);
+    }
+  };
+
+  const handleBulkDispose = async () => {
+    try {
+      const { error } = await supabase
+        .from('itam_assets')
+        .update({ status: 'disposed' })
+        .in('id', selectedAssets);
+
+      if (error) throw error;
+      
+      toast.success(`${selectedAssets.length} asset(s) marked as disposed`);
+      setSelectedAssets([]);
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    } catch (error: any) {
+      toast.error("Failed to update assets: " + error.message);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedAssets.length} asset(s)?`)) return;
+    
+    try {
+      const { error } = await supabase
+        .from('itam_assets')
+        .update({ is_deleted: true })
+        .in('id', selectedAssets);
+
+      if (error) throw error;
+      
+      toast.success(`${selectedAssets.length} asset(s) deleted`);
+      setSelectedAssets([]);
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+      queryClient.invalidateQueries({ queryKey: ["assets-count"] });
+    } catch (error: any) {
+      toast.error("Failed to delete assets: " + error.message);
+    }
   };
 
   const { data: assets = [], isLoading } = useQuery({
@@ -154,10 +238,46 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
 
   return (
     <>
+      {selectedAssets.length > 0 && (
+        <div className="mb-3 p-3 border rounded-lg bg-muted/50 flex items-center justify-between">
+          <span className="text-sm font-medium">
+            {selectedAssets.length} asset(s) selected
+          </span>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleBulkCheckOut}>
+              <UserCheck className="h-3.5 w-3.5 mr-1.5" />
+              Check Out
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleBulkCheckIn}>
+              <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+              Check In
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleBulkMaintenance}>
+              <Wrench className="h-3.5 w-3.5 mr-1.5" />
+              Maintenance
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleBulkDispose}>
+              <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
+              Dispose
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              Delete
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
+              <TableHead className="w-12">
+                <Checkbox 
+                  checked={selectedAssets.length === filteredAssets.length && filteredAssets.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+              </TableHead>
               <TableHead className="text-xs font-medium h-9">
                 <Button 
                   variant="ghost" 
@@ -254,31 +374,36 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
               <TableRow 
                 key={asset.id} 
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
               >
-                <TableCell className="py-2">
+                <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox 
+                    checked={selectedAssets.includes(asset.id)}
+                    onCheckedChange={(checked) => handleSelectAsset(asset.id, checked as boolean)}
+                  />
+                </TableCell>
+                <TableCell className="py-2" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   <div className="font-medium text-sm">{asset.asset_id || '—'}</div>
                 </TableCell>
-                <TableCell className="py-2 text-sm">
+                <TableCell className="py-2 text-sm" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.brand || '—'}
                 </TableCell>
-                <TableCell className="py-2 text-sm">
+                <TableCell className="py-2 text-sm" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.model || '—'}
                 </TableCell>
-                <TableCell className="py-2 text-sm text-muted-foreground max-w-[200px] truncate">
+                <TableCell className="py-2 text-sm text-muted-foreground max-w-[200px] truncate" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.description || '—'}
                 </TableCell>
-                <TableCell className="py-2 text-sm">
+                <TableCell className="py-2 text-sm" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.serial_number || '—'}
                 </TableCell>
-                <TableCell className="py-2">
+                <TableCell className="py-2" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.category && (
                     <Badge variant="outline" className="text-xs capitalize">
                       {asset.category}
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="py-2">
+                <TableCell className="py-2" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   <Badge 
                     variant="outline" 
                     className={`text-xs capitalize ${statusColors[asset.status || "available"]}`}
@@ -286,7 +411,7 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
                     {asset.status || 'available'}
                   </Badge>
                 </TableCell>
-                <TableCell className="py-2 text-sm">
+                <TableCell className="py-2 text-sm" onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}>
                   {asset.assigned_to || '—'}
                 </TableCell>
                 <TableCell className="text-right py-2">
