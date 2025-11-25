@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrganisation } from "@/contexts/OrganisationContext";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -22,15 +24,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Download, Filter } from "lucide-react";
+import { Plus, Search, Download, Filter, UserCheck, Package, Trash2, Wrench } from "lucide-react";
 
 const AssetsList = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { organisation } = useOrganisation();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [selectedAssets, setSelectedAssets] = useState<number[]>([]);
 
   const { data: assets = [], isLoading } = useQuery({
     queryKey: ["itam-assets-list", organisation?.id, statusFilter, typeFilter],
@@ -68,6 +72,39 @@ const AssetsList = () => {
         asset.model?.toLowerCase().includes(search.toLowerCase())
       : true
   );
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ status }: { status: string }) => {
+      const { error } = await supabase
+        .from("itam_assets")
+        .update({ status })
+        .in("id", selectedAssets);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["itam-assets-list"] });
+      toast.success("Assets updated successfully");
+      setSelectedAssets([]);
+    },
+    onError: (error) => {
+      toast.error(`Failed to update assets: ${error.message}`);
+    },
+  });
+
+  const toggleAsset = (assetId: number) => {
+    setSelectedAssets((prev) =>
+      prev.includes(assetId) ? prev.filter((id) => id !== assetId) : [...prev, assetId]
+    );
+  };
+
+  const toggleAll = () => {
+    if (selectedAssets.length === filteredAssets.length) {
+      setSelectedAssets([]);
+    } else {
+      setSelectedAssets(filteredAssets.map((a) => a.id));
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -122,6 +159,7 @@ const AssetsList = () => {
               <h1 className="text-2xl font-bold">Asset Inventory</h1>
               <p className="text-sm text-muted-foreground">
                 {filteredAssets.length} assets found
+                {selectedAssets.length > 0 && ` • ${selectedAssets.length} selected`}
               </p>
             </div>
           </div>
@@ -136,6 +174,61 @@ const AssetsList = () => {
             </Button>
           </div>
         </div>
+
+        {/* Bulk Actions Toolbar */}
+        {selectedAssets.length > 0 && (
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">
+                {selectedAssets.length} asset{selectedAssets.length > 1 ? 's' : ''} selected
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedAssets([])}
+              >
+                Clear
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => bulkUpdateMutation.mutate({ status: "assigned" })}
+                disabled={bulkUpdateMutation.isPending}
+              >
+                <UserCheck className="h-4 w-4 mr-2" />
+                Check Out
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => bulkUpdateMutation.mutate({ status: "available" })}
+                disabled={bulkUpdateMutation.isPending}
+              >
+                <Package className="h-4 w-4 mr-2" />
+                Check In
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => bulkUpdateMutation.mutate({ status: "disposed" })}
+                disabled={bulkUpdateMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Dispose
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => bulkUpdateMutation.mutate({ status: "in_repair" })}
+                disabled={bulkUpdateMutation.isPending}
+              >
+                <Wrench className="h-4 w-4 mr-2" />
+                Maintenance
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
@@ -187,6 +280,12 @@ const AssetsList = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedAssets.length === filteredAssets.length && filteredAssets.length > 0}
+                    onCheckedChange={toggleAll}
+                  />
+                </TableHead>
                 <TableHead>ASSET ID</TableHead>
                 <TableHead>BRAND</TableHead>
                 <TableHead>MODEL</TableHead>
@@ -201,13 +300,13 @@ const AssetsList = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={10} className="text-center py-8">
                     Loading assets...
                   </TableCell>
                 </TableRow>
               ) : filteredAssets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={10} className="text-center py-8">
                     No assets found. Add your first asset to get started.
                   </TableCell>
                 </TableRow>
@@ -215,22 +314,54 @@ const AssetsList = () => {
                 filteredAssets.map((asset) => (
                   <TableRow
                     key={asset.id}
-                    className="cursor-pointer hover:bg-accent"
-                    onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    className="hover:bg-accent"
                   >
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedAssets.includes(asset.id)}
+                        onCheckedChange={() => toggleAsset(asset.id)}
+                      />
+                    </TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
                       <div className="font-medium">{asset.asset_id || '—'}</div>
                     </TableCell>
-                    <TableCell>{asset.brand || '—'}</TableCell>
-                    <TableCell>{asset.model || '—'}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
+                      {asset.brand || '—'}
+                    </TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
+                      {asset.model || '—'}
+                    </TableCell>
+                    <TableCell 
+                      className="max-w-[200px] truncate cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
                       {asset.description || '—'}
                     </TableCell>
-                    <TableCell>{asset.serial_number || '—'}</TableCell>
-                    <TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
+                      {asset.serial_number || '—'}
+                    </TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
                       <Badge variant="secondary">{asset.category || '—'}</Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
                       <Badge 
                         variant={asset.status === 'available' ? 'default' : 'secondary'}
                         className={asset.status === 'available' ? 'bg-green-500 text-white' : ''}
@@ -238,7 +369,12 @@ const AssetsList = () => {
                         {asset.status || 'available'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{asset.assigned_to || '—'}</TableCell>
+                    <TableCell 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/helpdesk/assets/detail/${asset.id}`)}
+                    >
+                      {asset.assigned_to || '—'}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
