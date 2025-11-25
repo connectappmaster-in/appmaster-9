@@ -12,12 +12,16 @@ import {
   Search,
   Eye,
   Edit,
-  Bell
+  Bell,
+  LayoutDashboard,
+  Activity,
 } from "lucide-react";
 import { AddMonitorDialog } from "@/components/Monitoring/AddMonitorDialog";
 import { ConfigureAlertDialog } from "@/components/Monitoring/ConfigureAlertDialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Monitor {
   id: string;
@@ -31,6 +35,7 @@ interface Monitor {
 }
 
 export default function Monitoring() {
+  const [activeTab, setActiveTab] = useState("overview");
   const [addMonitorOpen, setAddMonitorOpen] = useState(false);
   const [configureAlertOpen, setConfigureAlertOpen] = useState(false);
   const [selectedMonitor, setSelectedMonitor] = useState<string | undefined>();
@@ -106,8 +111,67 @@ export default function Monitoring() {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
-        {/* Compact Single Row Header - Match Tickets Layout */}
-        <div className="flex items-center gap-2 flex-wrap mb-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="monitors" className="gap-1.5 px-3 text-sm h-7">
+                <Activity className="h-3.5 w-3.5" />
+                Monitors
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="overview" className="space-y-4 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("monitors")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Activity className="h-4 w-4 text-primary" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total Monitors</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("monitors")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Eye className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Healthy</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("monitors")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Bell className="h-4 w-4 text-orange-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Warnings</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("monitors")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Bell className="h-4 w-4 text-red-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Critical Alerts</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="monitors" className="space-y-2 mt-2">
+            {/* Compact Single Row Header - Match Tickets Layout */}
+            <div className="flex items-center gap-2 flex-wrap mb-2">
           <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -326,6 +390,8 @@ export default function Monitoring() {
           monitorName={selectedMonitor}
           onSave={handleSaveAlertConfig}
         />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
