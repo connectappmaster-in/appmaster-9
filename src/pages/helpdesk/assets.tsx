@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Package, UserCheck, Search } from "lucide-react";
@@ -12,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function HelpdeskAssets() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, any>>({});
@@ -124,13 +126,8 @@ export default function HelpdeskAssets() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="maintenance" className="gap-1.5 px-3 text-sm h-7">
-                Maintenance
-                {maintenanceAssets.length > 0 && (
-                  <Badge variant="secondary" className="ml-1.5 text-xs px-1.5 py-0">
-                    {maintenanceAssets.length}
-                  </Badge>
-                )}
+              <TabsTrigger value="explore" className="gap-1.5 px-3 text-sm h-7">
+                Explore
               </TabsTrigger>
             </TabsList>
 
@@ -218,9 +215,87 @@ export default function HelpdeskAssets() {
             <AssetsList status="available" filters={filters} />
           </TabsContent>
 
-          {/* Maintenance Assets Tab */}
-          <TabsContent value="maintenance" className="space-y-2 mt-2">
-            <AssetsList status="in_repair" filters={filters} />
+          {/* Explore Tab */}
+          <TabsContent value="explore" className="space-y-2 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
+              {/* Bulk Actions */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/bulk-actions')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Bulk Actions</div>
+                  <div className="text-xs text-muted-foreground">Check Out, Check In, Dispose, Maintenance</div>
+                </div>
+              </Button>
+
+              {/* Lists */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/lists')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Lists</div>
+                  <div className="text-xs text-muted-foreground">Maintenances, Warranties</div>
+                </div>
+              </Button>
+
+              {/* Reports */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/reports')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Reports</div>
+                  <div className="text-xs text-muted-foreground">Asset, Audit, Check-Out, Maintenance</div>
+                </div>
+              </Button>
+
+              {/* Tools */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/tools')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Tools</div>
+                  <div className="text-xs text-muted-foreground">Import, Export, Galleries, Audit</div>
+                </div>
+              </Button>
+
+              {/* Advanced */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/advanced')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Advanced</div>
+                  <div className="text-xs text-muted-foreground">Employees, Users</div>
+                </div>
+              </Button>
+
+              {/* Fields Setup */}
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex-col gap-2"
+                onClick={() => navigate('/helpdesk/assets/explore/fields-setup')}
+              >
+                <Package className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">Fields Setup</div>
+                  <div className="text-xs text-muted-foreground">Company, Sites, Categories, Tag Format</div>
+                </div>
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
