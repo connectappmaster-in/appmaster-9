@@ -117,7 +117,7 @@ export default function HelpdeskAssets() {
               </TabsTrigger>
             </TabsList>
 
-            {activeTab !== 'assigned' && <>
+            {activeTab !== 'assigned' && activeTab !== 'overview' && <>
                 <div className="relative w-[250px]">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search assets..." value={filters.search || ''} onChange={e => setFilters({
