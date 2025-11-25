@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, Eye, Edit, UserPlus, MoreHorizontal } from "lucide-react";
+import { Package, Eye, Edit, UserPlus, MoreHorizontal, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EditAssetDialog } from "./EditAssetDialog";
@@ -24,10 +24,40 @@ const statusColors: Record<string, string> = {
   disposed: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
+type SortColumn = 'asset_id' | 'brand' | 'model' | 'description' | 'serial_number' | 'category' | 'status' | 'assigned_to';
+type SortDirection = 'asc' | 'desc' | null;
+
 export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
   const navigate = useNavigate();
   const [editAsset, setEditAsset] = useState<any>(null);
   const [assignAsset, setAssignAsset] = useState<any>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortColumn(null);
+        setSortDirection(null);
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (column: SortColumn) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    }
+    if (sortDirection === 'asc') {
+      return <ChevronUp className="ml-1 h-3 w-3" />;
+    }
+    return <ChevronDown className="ml-1 h-3 w-3" />;
+  };
 
   const { data: assets = [], isLoading } = useQuery({
     queryKey: ["assets", status, filters],
@@ -69,7 +99,7 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
   });
 
   // Client-side filtering
-  const filteredAssets = assets.filter((asset: any) => {
+  let filteredAssets = assets.filter((asset: any) => {
     if (filters.status && asset.status !== filters.status) return false;
     if (filters.type && asset.category !== filters.type) return false;
     if (filters.search) {
@@ -83,6 +113,17 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
     }
     return true;
   });
+
+  // Apply sorting
+  if (sortColumn && sortDirection) {
+    filteredAssets = [...filteredAssets].sort((a, b) => {
+      const aVal = a[sortColumn] || '';
+      const bVal = b[sortColumn] || '';
+      
+      const comparison = aVal.toString().localeCompare(bVal.toString(), undefined, { numeric: true });
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }
 
   if (isLoading) {
     return (
@@ -117,14 +158,94 @@ export const AssetsList = ({ status, filters = {} }: AssetsListProps) => {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-xs font-medium h-9">ASSET ID</TableHead>
-              <TableHead className="text-xs font-medium h-9">BRAND</TableHead>
-              <TableHead className="text-xs font-medium h-9">MODEL</TableHead>
-              <TableHead className="text-xs font-medium h-9">DESCRIPTION</TableHead>
-              <TableHead className="text-xs font-medium h-9">SERIAL NO</TableHead>
-              <TableHead className="text-xs font-medium h-9">CATEGORY</TableHead>
-              <TableHead className="text-xs font-medium h-9">STATUS</TableHead>
-              <TableHead className="text-xs font-medium h-9">ASSIGNED TO</TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('asset_id')}
+                >
+                  ASSET ID
+                  {getSortIcon('asset_id')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('brand')}
+                >
+                  BRAND
+                  {getSortIcon('brand')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('model')}
+                >
+                  MODEL
+                  {getSortIcon('model')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('description')}
+                >
+                  DESCRIPTION
+                  {getSortIcon('description')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('serial_number')}
+                >
+                  SERIAL NO
+                  {getSortIcon('serial_number')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('category')}
+                >
+                  CATEGORY
+                  {getSortIcon('category')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('status')}
+                >
+                  STATUS
+                  {getSortIcon('status')}
+                </Button>
+              </TableHead>
+              <TableHead className="text-xs font-medium h-9">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  onClick={() => handleSort('assigned_to')}
+                >
+                  ASSIGNED TO
+                  {getSortIcon('assigned_to')}
+                </Button>
+              </TableHead>
               <TableHead className="text-xs font-medium h-9 text-right">ACTIONS</TableHead>
             </TableRow>
           </TableHeader>
