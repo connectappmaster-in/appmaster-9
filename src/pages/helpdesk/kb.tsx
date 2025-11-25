@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Eye, Edit, Trash2, BookOpen } from "lucide-react";
+import { Search, Download, Filter, Calendar, Eye, Edit, Trash2, BarChart, BookOpen, LayoutDashboard, FileText, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface KBArticle {
   id: number;
@@ -20,6 +22,7 @@ interface KBArticle {
 }
 
 export default function KnowledgeBaseModule() {
+  const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -59,8 +62,67 @@ export default function KnowledgeBaseModule() {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
-        {/* Compact Single Row Header - Match Tickets Layout */}
-        <div className="flex items-center gap-2 flex-wrap mb-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="articles" className="gap-1.5 px-3 text-sm h-7">
+                <BookOpen className="h-3.5 w-3.5" />
+                Articles
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="overview" className="space-y-4 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("articles")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total Articles</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("articles")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <BookOpen className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Published</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("articles")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <FileText className="h-4 w-4 text-orange-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Draft</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("articles")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Categories</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="articles" className="space-y-2 mt-2">
+            {/* Compact Single Row Header - Match Tickets Layout */}
+            <div className="flex items-center gap-2 flex-wrap mb-2">
           <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -102,12 +164,12 @@ export default function KnowledgeBaseModule() {
               </SelectContent>
             </Select>
 
-            <Button size="sm" className="gap-1.5 h-8">
-              <Plus className="h-3.5 w-3.5" />
-              <span className="text-sm">New Article</span>
-            </Button>
+              <Button size="sm" className="gap-1.5 h-8">
+                <Download className="h-3.5 w-3.5" />
+                <span className="text-sm">New Article</span>
+              </Button>
+            </div>
           </div>
-        </div>
 
         {/* Table View - Match Tickets Layout */}
         {articles.length === 0 ? (
@@ -123,7 +185,7 @@ export default function KnowledgeBaseModule() {
             </p>
             {searchQuery === '' && statusFilter === 'all' && categoryFilter === 'all' && (
               <Button size="sm" className="gap-1.5 h-8">
-                <Plus className="h-3.5 w-3.5" />
+                <Download className="h-3.5 w-3.5" />
                 <span className="text-sm">Create First Article</span>
               </Button>
             )}
@@ -224,6 +286,8 @@ export default function KnowledgeBaseModule() {
             </Table>
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

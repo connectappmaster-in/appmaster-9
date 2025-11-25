@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Download, Filter, Eye, ShieldCheck } from "lucide-react";
+import { Search, Download, Filter, Eye, ShieldCheck, LayoutDashboard, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface AuditLog {
   id: number;
@@ -20,6 +22,7 @@ interface AuditLog {
 }
 
 export default function Audit() {
+  const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("all");
   const [actionFilter, setActionFilter] = useState("all");
@@ -63,8 +66,67 @@ export default function Audit() {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
-        {/* Compact Single Row Header - Match Tickets Layout */}
-        <div className="flex items-center gap-2 flex-wrap mb-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="logs" className="gap-1.5 px-3 text-sm h-7">
+                <FileText className="h-3.5 w-3.5" />
+                Audit Logs
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="overview" className="space-y-4 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("logs")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total Entries</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("logs")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <FileText className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Entries Today</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("logs")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <FileText className="h-4 w-4 text-blue-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">This Week</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("logs")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <ShieldCheck className="h-4 w-4 text-purple-600" />
+                    <span className="text-2xl font-bold">0</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Active Users</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="logs" className="space-y-2 mt-2">
+            {/* Compact Single Row Header - Match Tickets Layout */}
+            <div className="flex items-center gap-2 flex-wrap mb-2">
           <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -215,6 +277,8 @@ export default function Audit() {
             </Table>
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

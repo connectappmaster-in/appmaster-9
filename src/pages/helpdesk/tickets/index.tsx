@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Ticket, AlertTriangle, Search } from "lucide-react";
+import { Plus, Ticket, AlertTriangle, Search, LayoutDashboard, AlertCircle, Clock, CheckCircle2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,11 +19,12 @@ import { AssignTicketDialog } from "@/components/helpdesk/AssignTicketDialog";
 import { EditProblemDialog } from "@/components/helpdesk/EditProblemDialog";
 import { AssignProblemDialog } from "@/components/helpdesk/AssignProblemDialog";
 import { ProblemTableView } from "@/components/helpdesk/ProblemTableView";
+import { useHelpdeskStats } from "@/hooks/useHelpdeskStats";
 
 export default function TicketsModule() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState("tickets");
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Set active tab based on route
   useEffect(() => {
@@ -140,6 +141,9 @@ export default function TicketsModule() {
   const handleSelectAllProblems = (checked: boolean) => {
     setSelectedProblemIds(checked ? problems.map((p: any) => p.id) : []);
   };
+
+  const { data: stats, isLoading: statsLoading } = useHelpdeskStats();
+
   const quickLinks: any[] = [];
   return <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
@@ -147,6 +151,10 @@ export default function TicketsModule() {
           {/* Compact Single Row Header */}
           <div className="flex items-center gap-2 flex-wrap">
             <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="tickets" className="gap-1.5 px-3 text-sm h-7">
                 <Ticket className="h-3.5 w-3.5" />
                 All Tickets
@@ -281,6 +289,90 @@ export default function TicketsModule() {
               </>
             )}
           </div>
+
+          <TabsContent value="overview" className="space-y-4 mt-2">
+            {statsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Ticket className="h-4 w-4 text-primary" />
+                        <span className="text-2xl font-bold">{stats?.total || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Total Tickets</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <AlertCircle className="h-4 w-4 text-orange-600" />
+                        <span className="text-2xl font-bold">{stats?.open || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Open Tickets</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Clock className="h-4 w-4 text-blue-600" />
+                        <span className="text-2xl font-bold">{stats?.inProgress || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">In Progress</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <span className="text-2xl font-bold">{stats?.resolved || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Resolved</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <span className="text-2xl font-bold">{stats?.urgent || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Urgent Tickets</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Clock className="h-4 w-4 text-destructive" />
+                        <span className="text-2xl font-bold">{stats?.slaBreached || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">SLA Breached</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("tickets")}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Ticket className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-2xl font-bold">{stats?.recentTickets || 0}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Last 7 Days</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            )}
+          </TabsContent>
 
           <TabsContent value="tickets" className="space-y-2 mt-2">
             {/* Tickets Content */}

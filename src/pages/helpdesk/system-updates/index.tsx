@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CheckCircle,
   AlertTriangle,
@@ -11,6 +12,9 @@ import {
   Shield,
   TrendingUp,
   Settings,
+  LayoutDashboard,
+  List,
+  FileText,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -27,6 +31,7 @@ interface DashboardStats {
 
 export default function SystemUpdatesDashboard() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalDevices: 0,
@@ -107,144 +112,128 @@ export default function SystemUpdatesDashboard() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">System Updates Dashboard</h1>
-            <p className="text-muted-foreground">
-              Monitor Windows/OS update compliance across your organization
-            </p>
+    <div className="min-h-screen bg-background">
+      <div className="w-full px-4 pt-2 pb-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <TabsList className="h-8">
+              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="devices" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/devices")}>
+                <Server className="h-3.5 w-3.5" />
+                Devices
+              </TabsTrigger>
+              <TabsTrigger value="updates" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/updates")}>
+                <List className="h-3.5 w-3.5" />
+                Updates
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/reports")}>
+                <FileText className="h-3.5 w-3.5" />
+                Reports
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="ml-auto">
+              <Button variant="outline" size="sm" onClick={() => navigate("/helpdesk/system-updates/settings")} className="h-8 gap-1.5">
+                <Settings className="h-3.5 w-3.5" />
+                Settings
+              </Button>
+            </div>
           </div>
-          <Button variant="outline" onClick={() => navigate("/helpdesk/system-updates/settings")}>
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
-        </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/devices")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Devices</CardTitle>
-              <Server className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalDevices}</div>
-              <p className="text-xs text-muted-foreground">Managed devices</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-4 mt-2">
 
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/devices?filter=compliant")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Compliance Rate</CardTitle>
-              <Shield className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-primary">{complianceRate}%</div>
-              <p className="text-xs text-muted-foreground">
-                {stats.compliantDevices} of {stats.totalDevices} devices
-              </p>
-            </CardContent>
-          </Card>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/devices")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Server className="h-4 w-4 text-primary" />
+                    <span className="text-2xl font-bold">{stats.totalDevices}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total Devices</p>
+                </CardContent>
+              </Card>
 
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/devices?filter=pending")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending Critical</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">{stats.pendingCritical}</div>
-              <p className="text-xs text-muted-foreground">{stats.pendingTotal} total pending</p>
-            </CardContent>
-          </Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/devices?filter=compliant")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Shield className="h-4 w-4 text-green-600" />
+                    <span className="text-2xl font-bold">{complianceRate}%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Compliance Rate</p>
+                </CardContent>
+              </Card>
 
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/alerts")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.activeAlerts}</div>
-              <p className="text-xs text-muted-foreground">Requires attention</p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/devices?filter=pending")}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                    <span className="text-2xl font-bold">{stats.pendingCritical}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Pending Critical</p>
+                </CardContent>
+              </Card>
 
-        {/* Compliance Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Compliance Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={complianceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    <span className="text-2xl font-bold">{stats.activeAlerts}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Active Alerts</p>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/devices")}
-          >
-            <CardHeader>
-              <CardTitle className="text-base">View All Devices</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Manage device inventory and compliance status
-              </p>
-            </CardContent>
-          </Card>
+            {/* Compliance Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Compliance Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={complianceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/updates")}
-          >
-            <CardHeader>
-              <CardTitle className="text-base">Browse Updates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                View available KB updates and patch information
-              </p>
-            </CardContent>
-          </Card>
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/devices")}>
+                <CardContent className="p-4">
+                  <Server className="h-5 w-5 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm mb-1">View All Devices</h3>
+                  <p className="text-xs text-muted-foreground">Manage device inventory and compliance status</p>
+                </CardContent>
+              </Card>
 
-          <Card
-            className="cursor-pointer hover:bg-accent transition-colors"
-            onClick={() => navigate("/helpdesk/system-updates/reports")}
-          >
-            <CardHeader>
-              <CardTitle className="text-base">Generate Reports</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Export compliance and update aging reports
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/updates")}>
+                <CardContent className="p-4">
+                  <List className="h-5 w-5 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm mb-1">Browse Updates</h3>
+                  <p className="text-xs text-muted-foreground">View available KB updates and patch information</p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/system-updates/reports")}>
+                <CardContent className="p-4">
+                  <FileText className="h-5 w-5 text-primary mb-2" />
+                  <h3 className="font-semibold text-sm mb-1">Generate Reports</h3>
+                  <p className="text-xs text-muted-foreground">Export compliance and update aging reports</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
