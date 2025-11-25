@@ -109,14 +109,14 @@ export const DocsTab = ({ assetId }: DocsTabProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="doc-type">Document Type</Label>
+    <Card>
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <Label htmlFor="doc-type" className="text-xs">Document Type</Label>
               <Select value={docType} onValueChange={setDocType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -128,70 +128,66 @@ export const DocsTab = ({ assetId }: DocsTabProps) => {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label htmlFor="doc-upload">
-                <Button variant="outline" disabled={uploading} asChild>
-                  <span className="cursor-pointer">
-                    {uploading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Upload className="mr-2 h-4 w-4" />
-                    )}
-                    Upload Document
-                  </span>
-                </Button>
-              </label>
-              <Input
-                id="doc-upload"
-                type="file"
-                onChange={handleDocumentUpload}
-                className="hidden"
-              />
-            </div>
+            <label htmlFor="doc-upload">
+              <Button variant="outline" size="sm" disabled={uploading} asChild>
+                <span className="cursor-pointer">
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
+                  Upload
+                </span>
+              </Button>
+            </label>
+            <Input
+              id="doc-upload"
+              type="file"
+              onChange={handleDocumentUpload}
+              className="hidden"
+            />
           </div>
-        </CardContent>
-      </Card>
 
-      {(!documents || documents.length === 0) ? (
-        <div className="text-center py-8 text-muted-foreground">No documents uploaded</div>
-      ) : (
-        <div className="space-y-4">
-          {documents.map((doc) => (
-            <Card key={doc.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{doc.document_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {doc.document_type} • Uploaded {format(new Date(doc.uploaded_at), "dd/MM/yyyy")}
+          {(!documents || documents.length === 0) ? (
+            <div className="text-center py-6 text-sm text-muted-foreground">No documents uploaded</div>
+          ) : (
+            <div className="space-y-2">
+              {documents.map((doc) => (
+                <div key={doc.id} className="flex items-center justify-between p-2 border rounded hover:bg-muted/50">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{doc.document_name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {doc.document_type} • {format(new Date(doc.uploaded_at), "dd/MM/yyyy")}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
+                      className="h-7 w-7"
                       onClick={() => window.open(doc.document_url, '_blank')}
                     >
-                      <Download className="h-4 w-4" />
+                      <Download className="h-3 w-3" />
                     </Button>
                     <Button
-                      variant="destructive"
+                      variant="ghost"
                       size="icon"
+                      className="h-7 w-7 text-destructive hover:text-destructive"
                       onClick={() => deleteDocument.mutate(doc.id)}
                       disabled={deleteDocument.isPending}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };

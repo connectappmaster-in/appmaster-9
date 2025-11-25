@@ -33,6 +33,11 @@ import { PhotosTab } from "./[assetId]/tabs/PhotosTab";
 import { DocsTab } from "./[assetId]/tabs/DocsTab";
 import { WarrantyTab } from "./[assetId]/tabs/WarrantyTab";
 import { HistoryTab } from "./[assetId]/tabs/HistoryTab";
+import { LinkingTab } from "./[assetId]/tabs/LinkingTab";
+import { MaintenanceTab } from "./[assetId]/tabs/MaintenanceTab";
+import { ContractsTab } from "./[assetId]/tabs/ContractsTab";
+import { ReserveTab } from "./[assetId]/tabs/ReserveTab";
+import { AuditTab } from "./[assetId]/tabs/AuditTab";
 import { EditAssetDialog } from "@/components/ITAM/EditAssetDialog";
 
 const AssetDetail = () => {
@@ -482,43 +487,23 @@ const AssetDetail = () => {
           </TabsContent>
 
           <TabsContent value="linking" className="mt-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Linking feature coming soon</p>
-              </CardContent>
-            </Card>
+            <LinkingTab assetId={asset.id} />
           </TabsContent>
 
           <TabsContent value="maintenance" className="mt-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Maintenance records coming soon</p>
-              </CardContent>
-            </Card>
+            <MaintenanceTab assetId={asset.id} />
           </TabsContent>
 
           <TabsContent value="contracts" className="mt-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Contracts feature coming soon</p>
-              </CardContent>
-            </Card>
+            <ContractsTab assetId={asset.id} />
           </TabsContent>
 
           <TabsContent value="reserve" className="mt-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Reservation system coming soon</p>
-              </CardContent>
-            </Card>
+            <ReserveTab assetId={asset.id} />
           </TabsContent>
 
           <TabsContent value="audit" className="mt-3">
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-center text-muted-foreground py-6">Audit logs coming soon</p>
-              </CardContent>
-            </Card>
+            <AuditTab assetId={asset.id} />
           </TabsContent>
 
           <TabsContent value="history" className="mt-3">
