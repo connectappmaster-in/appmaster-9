@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -375,56 +376,60 @@ const AssetDetail = () => {
                 </div>
               </div>
 
-              {/* Asset Details Grid */}
+              {/* Asset Details Table */}
               <div className="lg:col-span-2">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Asset Tag ID: </span>
-                    <span className="font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Site: </span>
-                    <span className="text-primary hover:underline cursor-pointer">{asset.site || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Purchase Date: </span>
-                    <span>{asset.purchase_date ? format(new Date(asset.purchase_date), "dd/MM/yyyy") : '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Location: </span>
-                    <span>{asset.location || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Cost: </span>
-                    <span className="font-semibold">₹{asset.cost?.toLocaleString() || '0.00'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Category: </span>
-                    <span>{asset.category || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Brand: </span>
-                    <span>{asset.brand || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Department: </span>
-                    <span>{asset.department || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Model: </span>
-                    <span>{asset.model || '—'}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-muted-foreground">Assigned to: </span>
-                    <span className="text-primary hover:underline cursor-pointer">{asset.assigned_to || '—'}</span>
-                  </p>
-                  <p className="text-sm col-span-2">
-                    <span className="font-semibold text-muted-foreground">Status: </span>
-                    <Badge variant="outline" className={`${getStatusColor(asset.status) === 'default' ? 'bg-green-100 text-green-800' : ''} capitalize`}>
-                      {asset.status === 'assigned' ? 'Checked out' : asset.status || 'available'}
-                    </Badge>
-                  </p>
-                </div>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Asset Tag ID</TableCell>
+                      <TableCell className="font-medium text-primary hover:underline cursor-pointer">{asset.asset_id || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Site</TableCell>
+                      <TableCell className="text-primary hover:underline cursor-pointer">{asset.site || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Purchase Date</TableCell>
+                      <TableCell>{asset.purchase_date ? format(new Date(asset.purchase_date), "dd/MM/yyyy") : '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Location</TableCell>
+                      <TableCell>{asset.location || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Cost</TableCell>
+                      <TableCell className="font-semibold">₹{asset.cost?.toLocaleString() || '0.00'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Category</TableCell>
+                      <TableCell>{asset.category || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Brand</TableCell>
+                      <TableCell>{asset.brand || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Department</TableCell>
+                      <TableCell>{asset.department || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Model</TableCell>
+                      <TableCell>{asset.model || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Assigned to</TableCell>
+                      <TableCell className="text-primary hover:underline cursor-pointer">{asset.assigned_to || '—'}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-semibold text-muted-foreground">Status</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`${getStatusColor(asset.status) === 'default' ? 'bg-green-100 text-green-800' : ''} capitalize`}>
+                          {asset.status === 'assigned' ? 'Checked out' : asset.status || 'available'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           </CardContent>
