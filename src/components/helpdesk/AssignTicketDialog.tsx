@@ -87,6 +87,7 @@ export const AssignTicketDialog = ({ open, onOpenChange, ticket }: AssignTicketD
     },
     onSuccess: () => {
       toast.success("Ticket assigned successfully");
+      queryClient.invalidateQueries({ queryKey: ["unified-requests"] });
       queryClient.invalidateQueries({ queryKey: ["helpdesk-tickets"] });
       queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", ticket.id.toString()] });
       onOpenChange(false);

@@ -57,7 +57,8 @@ export const TicketTableView = ({
                 onCheckedChange={onSelectAll}
               />
             </TableHead>
-            <TableHead className="py-2">Ticket #</TableHead>
+            <TableHead className="py-2">Request #</TableHead>
+            <TableHead className="py-2">Type</TableHead>
             <TableHead className="py-2">Title</TableHead>
             <TableHead className="py-2">Status</TableHead>
             <TableHead className="py-2">Priority</TableHead>
@@ -81,6 +82,11 @@ export const TicketTableView = ({
                 <span className="font-mono text-[0.85rem]">
                   {ticket.ticket_number}
                 </span>
+              </TableCell>
+              <TableCell onClick={() => navigate(`/helpdesk/tickets/${ticket.id}`)} className="py-1.5">
+                <Badge variant="outline" className="text-[0.75rem] px-1.5 py-0.5">
+                  {ticket.request_type === 'service_request' ? 'Service Request' : 'Ticket'}
+                </Badge>
               </TableCell>
               <TableCell onClick={() => navigate(`/helpdesk/tickets/${ticket.id}`)} className="py-1.5">
                 <div className="max-w-sm">

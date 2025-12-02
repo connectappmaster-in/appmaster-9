@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, Settings } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
@@ -105,6 +105,10 @@ export default function UpdatesPage() {
               Browse KB updates and view affected devices
             </p>
           </div>
+          <Button variant="outline" size="sm" onClick={() => navigate("/helpdesk/system-updates/settings")} className="h-8 gap-1.5">
+            <Settings className="h-3.5 w-3.5" />
+            Settings
+          </Button>
         </div>
 
         <Card>

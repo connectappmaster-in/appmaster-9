@@ -58,6 +58,7 @@ export const BulkActionsToolbar = ({ selectedIds, onClearSelection }: BulkAction
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['unified-requests'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-stats'] });
       toast.success(`Successfully updated ${selectedIds.length} ticket(s)`);
@@ -80,6 +81,7 @@ export const BulkActionsToolbar = ({ selectedIds, onClearSelection }: BulkAction
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unified-requests'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-stats'] });
       toast.success(`Successfully deleted ${selectedIds.length} ticket(s)`);

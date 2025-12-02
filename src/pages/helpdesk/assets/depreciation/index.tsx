@@ -7,65 +7,61 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingDown, FileText, Play, Clock, DollarSign, Package } from "lucide-react";
 import { format } from "date-fns";
-
 const DepreciationDashboard = () => {
   const navigate = useNavigate();
-  const { organisation } = useOrganisation();
-
-  const { data: profiles = [] } = useQuery({
+  const {
+    organisation
+  } = useOrganisation();
+  const {
+    data: profiles = []
+  } = useQuery({
     queryKey: ["depreciation-profiles", organisation?.id],
     queryFn: async () => {
       if (!organisation?.id) return [];
-      const { data } = await supabase
-        .from("asset_depreciation_profiles")
-        .select("*")
-        .eq("is_active", true)
-        .eq("is_deleted", false);
+      const {
+        data
+      } = await supabase.from("asset_depreciation_profiles").select("*").eq("is_active", true).eq("is_deleted", false);
       return data || [];
     },
-    enabled: !!organisation?.id,
+    enabled: !!organisation?.id
   });
-
-  const { data: runLogs = [] } = useQuery({
+  const {
+    data: runLogs = []
+  } = useQuery({
     queryKey: ["depreciation-run-logs", organisation?.id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("depreciation_run_logs")
-        .select("*")
-        .order("run_date", { ascending: false })
-        .limit(5);
+      const {
+        data
+      } = await supabase.from("depreciation_run_logs").select("*").order("run_date", {
+        ascending: false
+      }).limit(5);
       return data || [];
-    },
+    }
   });
-
-  const { data: entries = [] } = useQuery({
+  const {
+    data: entries = []
+  } = useQuery({
     queryKey: ["depreciation-entries-recent", organisation?.id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("depreciation_entries")
-        .select("*")
-        .eq("posted", true)
-        .order("created_at", { ascending: false })
-        .limit(10);
+      const {
+        data
+      } = await supabase.from("depreciation_entries").select("*").eq("posted", true).order("created_at", {
+        ascending: false
+      }).limit(10);
       return data || [];
-    },
+    }
   });
-
   const totalDepreciation = entries.reduce((sum, e) => sum + (parseFloat(String(e.depreciation_amount)) || 0), 0);
   const activeProfiles = profiles.length;
   const lastRun = runLogs[0];
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <BackButton />
             <div>
               <h1 className="text-3xl font-bold">Depreciation Management</h1>
-              <p className="text-muted-foreground">
-                Track and manage asset depreciation across your organization
-              </p>
+              
             </div>
           </div>
           <div className="flex gap-2">
@@ -138,12 +134,7 @@ const DepreciationDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {profiles.slice(0, 10).map((profile) => (
-                <div
-                  key={profile.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent cursor-pointer"
-                  onClick={() => navigate(`/helpdesk/assets/depreciation/profile-detail/${profile.id}`)}
-                >
+              {profiles.slice(0, 10).map(profile => <div key={profile.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent cursor-pointer" onClick={() => navigate(`/helpdesk/assets/depreciation/profile-detail/${profile.id}`)}>
                   <div>
                     <p className="font-medium">Asset ID: {profile.asset_id}</p>
                     <p className="text-sm text-muted-foreground">
@@ -154,21 +145,17 @@ const DepreciationDashboard = () => {
                     <p className="font-medium">INR {profile.cost_basis.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">{profile.useful_life_years} years</p>
                   </div>
-                </div>
-              ))}
-              {profiles.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
+                </div>)}
+              {profiles.length === 0 && <p className="text-center text-muted-foreground py-8">
                   No active depreciation profiles. Create one to start tracking depreciation.
-                </p>
-              )}
+                </p>}
             </div>
           </CardContent>
         </Card>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => navigate("/helpdesk/assets/depreciation/profile-create")}>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/assets/depreciation/profile-create")}>
             <CardContent className="p-6 flex items-center gap-4">
               <div className="p-3 rounded-lg bg-primary/10">
                 <TrendingDown className="h-6 w-6 text-primary" />
@@ -180,8 +167,7 @@ const DepreciationDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => navigate("/helpdesk/assets/depreciation/run")}>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/assets/depreciation/run")}>
             <CardContent className="p-6 flex items-center gap-4">
               <div className="p-3 rounded-lg bg-primary/10">
                 <Play className="h-6 w-6 text-primary" />
@@ -193,8 +179,7 @@ const DepreciationDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => navigate("/helpdesk/assets/depreciation/reports")}>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/helpdesk/assets/depreciation/reports")}>
             <CardContent className="p-6 flex items-center gap-4">
               <div className="p-3 rounded-lg bg-primary/10">
                 <FileText className="h-6 w-6 text-primary" />
@@ -207,8 +192,6 @@ const DepreciationDashboard = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default DepreciationDashboard;

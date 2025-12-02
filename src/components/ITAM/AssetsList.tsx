@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, Eye, Edit, UserPlus, MoreHorizontal, ArrowUpDown, ChevronUp, ChevronDown, Trash2, UserCheck, Wrench, AlertCircle } from "lucide-react";
+import { Package, MoreHorizontal, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EditAssetDialog } from "./EditAssetDialog";
@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface AssetsListProps {
   status?: string;
@@ -46,6 +47,8 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [selectedAssets, setSelectedAssets] = useState<number[]>([]);
+  const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
+  const [deleteAssetId, setDeleteAssetId] = useState<number | null>(null);
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -64,7 +67,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
 
   const getSortIcon = (column: SortColumn) => {
     if (sortColumn !== column) {
-      return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+      return <ArrowUpDown className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-50 transition-opacity" />;
     }
     if (sortDirection === 'asc') {
       return <ChevronUp className="ml-1 h-3 w-3" />;
@@ -151,8 +154,10 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${selectedAssets.length} asset(s)?`)) return;
-    
+    setBulkDeleteConfirmOpen(true);
+  };
+
+  const confirmBulkDelete = async () => {
     try {
       const { error } = await supabase
         .from('itam_assets')
@@ -279,7 +284,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('asset_id')}
                 >
                   ASSET ID
@@ -290,10 +295,10 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('brand')}
                 >
-                  BRAND
+                  MAKE
                   {getSortIcon('brand')}
                 </Button>
               </TableHead>
@@ -301,7 +306,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('model')}
                 >
                   MODEL
@@ -312,7 +317,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('description')}
                 >
                   DESCRIPTION
@@ -323,7 +328,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('serial_number')}
                 >
                   SERIAL NO
@@ -334,7 +339,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('category')}
                 >
                   CATEGORY
@@ -345,7 +350,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('status')}
                 >
                   STATUS
@@ -356,7 +361,7 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-7 px-2 -ml-2 hover:bg-muted"
+                  className="h-7 px-2 -ml-2 hover:bg-muted group"
                   onClick={() => handleSort('assigned_to')}
                 >
                   ASSIGNED TO
@@ -428,39 +433,104 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
                         e.stopPropagation();
                         navigate(`/helpdesk/assets/detail/${asset.id}`);
                       }}>
-                        <Eye className="mr-2 h-4 w-4" />
                         View
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={(e) => {
                         e.stopPropagation();
                         setEditAsset(asset);
                       }}>
-                        <Edit className="mr-2 h-4 w-4" />
                         Edit
+                      </DropdownMenuItem>
+                      {asset.status === 'available' && (
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          setAssignAsset(asset);
+                        }}>
+                          Check Out
+                        </DropdownMenuItem>
+                      )}
+                      {asset.status === 'assigned' && (
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          setAssignAsset(asset);
+                        }}>
+                          Check In
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const { error } = await supabase
+                            .from('itam_assets')
+                            .update({ status: 'lost' })
+                            .eq('id', asset.id);
+                          if (error) throw error;
+                          toast.success('Asset marked as lost');
+                          queryClient.invalidateQueries({ queryKey: ["assets"] });
+                        } catch (error: any) {
+                          toast.error("Failed to update asset: " + error.message);
+                        }
+                      }}>
+                        Lost
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const { error } = await supabase
+                            .from('itam_assets')
+                            .update({ status: 'in_repair' })
+                            .eq('id', asset.id);
+                          if (error) throw error;
+                          toast.success('Asset marked for repair');
+                          queryClient.invalidateQueries({ queryKey: ["assets"] });
+                        } catch (error: any) {
+                          toast.error("Failed to update asset: " + error.message);
+                        }
+                      }}>
+                        Repair
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const { error } = await supabase
+                            .from('itam_assets')
+                            .update({ status: 'retired' })
+                            .eq('id', asset.id);
+                          if (error) throw error;
+                          toast.success('Asset marked as broken');
+                          queryClient.invalidateQueries({ queryKey: ["assets"] });
+                        } catch (error: any) {
+                          toast.error("Failed to update asset: " + error.message);
+                        }
+                      }}>
+                        Broken
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const { error } = await supabase
+                            .from('itam_assets')
+                            .update({ status: 'disposed' })
+                            .eq('id', asset.id);
+                          if (error) throw error;
+                          toast.success('Asset disposed');
+                          queryClient.invalidateQueries({ queryKey: ["assets"] });
+                        } catch (error: any) {
+                          toast.error("Failed to update asset: " + error.message);
+                        }
+                      }}>
+                        Dispose
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={(e) => {
                         e.stopPropagation();
-                        setAssignAsset(asset);
+                        toast.info('Replicate feature coming soon');
                       }}>
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Check In
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Lost / Missing
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Repair
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Broken
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Dispose
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
                         Replicate
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem className="text-destructive" onClick={async (e) => {
+                        e.stopPropagation();
+                        setDeleteAssetId(asset.id);
+                      }}>
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -487,6 +557,44 @@ export const AssetsList = ({ status, filters = {}, onSelectionChange }: AssetsLi
           onOpenChange={(open) => !open && setAssignAsset(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={bulkDeleteConfirmOpen}
+        onOpenChange={setBulkDeleteConfirmOpen}
+        onConfirm={() => {
+          confirmBulkDelete();
+          setBulkDeleteConfirmOpen(false);
+        }}
+        title="Delete Assets"
+        description={`Are you sure you want to delete ${selectedAssets.length} asset(s)? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={deleteAssetId !== null}
+        onOpenChange={(open) => !open && setDeleteAssetId(null)}
+        onConfirm={async () => {
+          if (deleteAssetId === null) return;
+          try {
+            const { error } = await supabase
+              .from('itam_assets')
+              .update({ is_deleted: true })
+              .eq('id', deleteAssetId);
+            if (error) throw error;
+            toast.success('Asset deleted');
+            queryClient.invalidateQueries({ queryKey: ["assets"] });
+            queryClient.invalidateQueries({ queryKey: ["assets-count"] });
+          } catch (error: any) {
+            toast.error("Failed to delete asset: " + error.message);
+          }
+          setDeleteAssetId(null);
+        }}
+        title="Delete Asset"
+        description="Are you sure you want to delete this asset? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+      />
     </>
   );
 };

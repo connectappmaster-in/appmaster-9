@@ -56,6 +56,7 @@ export const BulkActionsButton = ({ selectedIds, onClearSelection }: BulkActions
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unified-requests'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets-all'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-stats'] });
@@ -78,6 +79,7 @@ export const BulkActionsButton = ({ selectedIds, onClearSelection }: BulkActions
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unified-requests'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-tickets-all'] });
       queryClient.invalidateQueries({ queryKey: ['helpdesk-stats'] });

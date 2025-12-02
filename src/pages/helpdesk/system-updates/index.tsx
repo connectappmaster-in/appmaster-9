@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CheckCircle,
   AlertTriangle,
@@ -114,36 +113,60 @@ export default function SystemUpdatesDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <TabsList className="h-8">
-              <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={activeTab === "overview" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveTab("overview")}
+                className="gap-1.5 h-8"
+              >
                 <LayoutDashboard className="h-3.5 w-3.5" />
                 Overview
-              </TabsTrigger>
-              <TabsTrigger value="devices" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/devices")}>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/helpdesk/system-updates/devices")}
+                className="gap-1.5 h-8"
+              >
                 <Server className="h-3.5 w-3.5" />
                 Devices
-              </TabsTrigger>
-              <TabsTrigger value="updates" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/updates")}>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/helpdesk/system-updates/updates")}
+                className="gap-1.5 h-8"
+              >
                 <List className="h-3.5 w-3.5" />
                 Updates
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="gap-1.5 px-3 text-sm h-7" onClick={() => navigate("/helpdesk/system-updates/reports")}>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/helpdesk/system-updates/reports")}
+                className="gap-1.5 h-8"
+              >
                 <FileText className="h-3.5 w-3.5" />
                 Reports
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="ml-auto">
-              <Button variant="outline" size="sm" onClick={() => navigate("/helpdesk/system-updates/settings")} className="h-8 gap-1.5">
-                <Settings className="h-3.5 w-3.5" />
-                Settings
               </Button>
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/helpdesk/system-updates/settings")}
+              className="gap-1.5 h-8"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              Settings
+            </Button>
           </div>
 
-          <TabsContent value="overview" className="space-y-4 mt-2">
+          {activeTab === "overview" && (
+            <div className="space-y-4 mt-2">
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -232,8 +255,9 @@ export default function SystemUpdatesDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-        </Tabs>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

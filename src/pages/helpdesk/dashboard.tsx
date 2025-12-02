@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Ticket, Package, Clock, AlertCircle, FileText, Wrench, CheckCircle2 } from "lucide-react";
+import { Ticket, Package, AlertCircle, FileText, Wrench, CheckCircle2 } from "lucide-react";
 import { useHelpdeskStats } from "@/hooks/useHelpdeskStats";
 import { useITAMStats } from "@/hooks/useITAMStats";
-import { useSRMStats } from "@/hooks/useSRMStats";
 import { DashboardStatCard } from "@/components/helpdesk/DashboardStatCard";
 import { RecentTicketsList } from "@/components/helpdesk/RecentTicketsList";
 import { SystemHealthMetrics } from "@/components/helpdesk/SystemHealthMetrics";
@@ -11,7 +10,6 @@ import { TicketStatsCards } from "@/components/helpdesk/TicketStatsCards";
 export default function HelpdeskDashboard() {
   const { data: ticketStats } = useHelpdeskStats();
   const { data: assetStats } = useITAMStats();
-  const { data: srmStats } = useSRMStats();
 
   return (
     <div className="max-w-7xl space-y-6">
@@ -45,12 +43,12 @@ export default function HelpdeskDashboard() {
           subtitle={`${assetStats?.assigned || 0} assigned`}
         />
         <DashboardStatCard
-          title="Pending SRM"
-          value={srmStats?.pending || 0}
-          icon={Clock}
-          color="text-purple-500"
-          href="/helpdesk/srm"
-          subtitle={`${srmStats?.total || 0} total requests`}
+          title="KB Articles"
+          value={0}
+          icon={FileText}
+          color="text-cyan-500"
+          href="/helpdesk/kb"
+          subtitle="Knowledge base"
         />
       </div>
 
@@ -71,11 +69,12 @@ export default function HelpdeskDashboard() {
           href="/helpdesk/tickets?status=resolved"
         />
         <DashboardStatCard
-          title="KB Articles"
-          value={0}
-          icon={FileText}
-          color="text-cyan-500"
-          href="/helpdesk/kb"
+          title="Assets Assigned"
+          value={assetStats?.assigned || 0}
+          icon={Package}
+          color="text-purple-500"
+          href="/helpdesk/assets?status=assigned"
+          subtitle="Currently in use"
         />
       </div>
 

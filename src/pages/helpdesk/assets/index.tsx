@@ -14,7 +14,8 @@ import {
   Key,
   Plus,
   FileText,
-  TrendingUp
+  TrendingUp,
+  Settings
 } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 
@@ -155,6 +156,11 @@ const ITAMDashboard = () => {
       icon: TrendingUp,
       onClick: () => navigate("/helpdesk/assets/reports"),
     },
+    {
+      label: "Tools",
+      icon: Settings,
+      onClick: () => navigate("/helpdesk/assets/tools"),
+    },
   ];
 
   return (
@@ -199,7 +205,7 @@ const ITAMDashboard = () => {
             <CardDescription>Common asset management tasks</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
               {quickActions.map((action) => (
                 <Button
                   key={action.label}

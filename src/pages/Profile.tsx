@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useLocation } from "react-router-dom";
 import { format } from "date-fns";
@@ -39,13 +39,16 @@ const Profile = () => {
     email: "",
     phone: ""
   });
+  const mainRef = useRef<HTMLElement>(null);
 
   // Intersection Observer for tracking active section
   useEffect(() => {
+    if (!mainRef.current) return;
+
     const observerOptions = {
-      root: document.querySelector('main'),
-      rootMargin: "-10% 0px -50% 0px",
-      threshold: [0, 0.25, 0.5, 0.75, 1]
+      root: mainRef.current,
+      rootMargin: "-20% 0px -60% 0px",
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
     };
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
@@ -288,7 +291,7 @@ const Profile = () => {
         <ProfileSidebar activeSection={activeSection} />
 
       {/* Main Content with smooth scrolling */}
-      <main className="flex-1 overflow-y-auto scroll-smooth">
+      <main ref={mainRef} className="flex-1 overflow-y-auto scroll-smooth">
         <div className="max-w-5xl mx-auto px-4 py-6 space-y-8">
           {/* Home Section */}
           <section id="home" className="py-4 space-y-4">

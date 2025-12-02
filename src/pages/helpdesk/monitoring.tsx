@@ -5,24 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Plus,
-  RefreshCw,
-  Settings,
-  Search,
-  Eye,
-  Edit,
-  Bell,
-  LayoutDashboard,
-  Activity,
-} from "lucide-react";
+import { Plus, RefreshCw, Settings, Search, Eye, Edit, Bell, Activity } from "lucide-react";
 import { AddMonitorDialog } from "@/components/Monitoring/AddMonitorDialog";
 import { ConfigureAlertDialog } from "@/components/Monitoring/ConfigureAlertDialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-
 interface Monitor {
   id: string;
   name: string;
@@ -33,7 +22,6 @@ interface Monitor {
   lastChecked: string;
   alertsCount: number;
 }
-
 export default function Monitoring() {
   const [activeTab, setActiveTab] = useState("overview");
   const [addMonitorOpen, setAddMonitorOpen] = useState(false);
@@ -49,7 +37,7 @@ export default function Monitoring() {
   const allMonitors: Monitor[] = [];
 
   // Client-side filtering
-  const monitors = allMonitors.filter((monitor) => {
+  const monitors = allMonitors.filter(monitor => {
     if (statusFilter !== 'all' && monitor.status !== statusFilter) return false;
     if (typeFilter !== 'all' && monitor.type !== typeFilter) return false;
     if (searchQuery) {
@@ -63,63 +51,58 @@ export default function Monitoring() {
   // Auto-refresh simulation
   useEffect(() => {
     if (!autoRefresh) return;
-
     const interval = setInterval(() => {
       // In production, this would fetch fresh data from the backend
     }, 10000); // Update every 10 seconds
 
     return () => clearInterval(interval);
   }, [autoRefresh]);
-
   const handleRefresh = () => {
     toast.info("Refreshing monitoring data...");
     // In production, this would fetch fresh data from the backend
   };
-
   const handleAddMonitor = (monitor: any) => {
     toast.success(`Monitor "${monitor.name}" added successfully`);
   };
-
   const handleConfigureAlert = (id: string) => {
     const monitor = monitors.find(m => m.id === id);
     setSelectedMonitor(monitor?.name);
     setConfigureAlertOpen(true);
   };
-
   const handleSaveAlertConfig = (config: any) => {
     toast.success("Alert configuration saved successfully");
   };
-
   const handleSelectMonitor = (id: string) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
-
   const handleSelectAll = (checked: boolean) => {
     setSelectedIds(checked ? monitors.map(m => m.id) : []);
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'bg-green-100 text-green-800 border-green-300';
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'critical': return 'bg-red-100 text-red-800 border-red-300';
-      case 'offline': return 'bg-gray-100 text-gray-800 border-gray-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'healthy':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-300';
+      case 'offline':
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <div className="w-full px-4 pt-2 pb-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <TabsList className="h-8">
               <TabsTrigger value="overview" className="gap-1.5 px-3 text-sm h-7">
-                <LayoutDashboard className="h-3.5 w-3.5" />
+                
                 Overview
               </TabsTrigger>
               <TabsTrigger value="monitors" className="gap-1.5 px-3 text-sm h-7">
-                <Activity className="h-3.5 w-3.5" />
+                
                 Monitors
               </TabsTrigger>
             </TabsList>
@@ -174,39 +157,21 @@ export default function Monitoring() {
             <div className="flex items-center gap-2 flex-wrap mb-2">
           <div className="relative w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search monitors..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-8"
-            />
+            <Input placeholder="Search monitors..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 h-8" />
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            <Button
-              variant={autoRefresh ? "default" : "outline"}
-              size="sm"
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              className="gap-1.5 h-8"
-            >
+            <Button variant={autoRefresh ? "default" : "outline"} size="sm" onClick={() => setAutoRefresh(!autoRefresh)} className="gap-1.5 h-8">
               <RefreshCw className={`h-3.5 w-3.5 ${autoRefresh ? 'animate-spin' : ''}`} />
               <span className="text-sm">{autoRefresh ? "Auto" : "Manual"}</span>
             </Button>
 
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              className="gap-1.5 h-8"
-            >
+            <Button variant="outline" size="sm" onClick={handleRefresh} className="gap-1.5 h-8">
               <RefreshCw className="h-3.5 w-3.5" />
               <span className="text-sm">Refresh</span>
             </Button>
 
-            <Select
-              value={statusFilter}
-              onValueChange={setStatusFilter}
-            >
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[120px] h-8">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -219,10 +184,7 @@ export default function Monitoring() {
               </SelectContent>
             </Select>
 
-            <Select
-              value={typeFilter}
-              onValueChange={setTypeFilter}
-            >
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-[120px] h-8">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
@@ -235,54 +197,36 @@ export default function Monitoring() {
               </SelectContent>
             </Select>
 
-            <Button 
-              size="sm" 
-              onClick={() => setAddMonitorOpen(true)}
-              className="gap-1.5 h-8"
-            >
+            <Button size="sm" onClick={() => setAddMonitorOpen(true)} className="gap-1.5 h-8">
               <Plus className="h-3.5 w-3.5" />
               <span className="text-sm">Add Monitor</span>
             </Button>
 
-            <Button 
-              variant="outline" 
-              size="icon"
-              className="h-8 w-8"
-            >
+            <Button variant="outline" size="icon" className="h-8 w-8">
               <Settings className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
 
         {/* Table View - Match Tickets Layout */}
-        {monitors.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 border border-dashed rounded-lg">
+        {monitors.length === 0 ? <div className="flex flex-col items-center justify-center py-12 border border-dashed rounded-lg">
             <div className="rounded-full bg-muted p-4 mb-3">
               <Bell className="h-8 w-8 text-muted-foreground" />
             </div>
             <h3 className="text-base font-semibold mb-1">No monitors found</h3>
             <p className="text-xs text-muted-foreground mb-4 text-center max-w-md">
-              {searchQuery || statusFilter !== 'all' || typeFilter !== 'all'
-                ? "Try adjusting your filters to see more monitors"
-                : "Get started by adding your first system monitor"}
+              {searchQuery || statusFilter !== 'all' || typeFilter !== 'all' ? "Try adjusting your filters to see more monitors" : "Get started by adding your first system monitor"}
             </p>
-            {searchQuery === '' && statusFilter === 'all' && typeFilter === 'all' && (
-              <Button size="sm" onClick={() => setAddMonitorOpen(true)} className="gap-1.5 h-8">
+            {searchQuery === '' && statusFilter === 'all' && typeFilter === 'all' && <Button size="sm" onClick={() => setAddMonitorOpen(true)} className="gap-1.5 h-8">
                 <Plus className="h-3.5 w-3.5" />
                 <span className="text-sm">Add First Monitor</span>
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="border rounded-lg overflow-hidden text-[0.85rem]">
+              </Button>}
+          </div> : <div className="border rounded-lg overflow-hidden text-[0.85rem]">
             <Table>
               <TableHeader>
                 <TableRow className="h-9">
                   <TableHead className="w-10 py-2">
-                    <Checkbox
-                      checked={selectedIds.length === monitors.length && monitors.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
+                    <Checkbox checked={selectedIds.length === monitors.length && monitors.length > 0} onCheckedChange={handleSelectAll} />
                   </TableHead>
                   <TableHead className="py-2">Monitor Name</TableHead>
                   <TableHead className="py-2">Type</TableHead>
@@ -294,16 +238,9 @@ export default function Monitoring() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {monitors.map((monitor) => (
-                  <TableRow 
-                    key={monitor.id} 
-                    className="cursor-pointer hover:bg-muted/50 h-11"
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()} className="py-1.5">
-                      <Checkbox
-                        checked={selectedIds.includes(monitor.id)}
-                        onCheckedChange={() => handleSelectMonitor(monitor.id)}
-                      />
+                {monitors.map(monitor => <TableRow key={monitor.id} className="cursor-pointer hover:bg-muted/50 h-11">
+                    <TableCell onClick={e => e.stopPropagation()} className="py-1.5">
+                      <Checkbox checked={selectedIds.includes(monitor.id)} onCheckedChange={() => handleSelectMonitor(monitor.id)} />
                     </TableCell>
                     <TableCell className="py-1.5">
                       <div className="font-medium text-[0.85rem]">{monitor.name}</div>
@@ -325,74 +262,42 @@ export default function Monitoring() {
                       </span>
                     </TableCell>
                     <TableCell className="py-1.5">
-                      {monitor.alertsCount > 0 ? (
-                        <Badge variant="destructive" className="text-[0.75rem] px-1.5 py-0.5">
+                      {monitor.alertsCount > 0 ? <Badge variant="destructive" className="text-[0.75rem] px-1.5 py-0.5">
                           {monitor.alertsCount}
-                        </Badge>
-                      ) : (
-                        <span className="text-[0.8rem] text-muted-foreground">-</span>
-                      )}
+                        </Badge> : <span className="text-[0.8rem] text-muted-foreground">-</span>}
                     </TableCell>
                     <TableCell className="py-1.5">
                       <div className="text-[0.8rem]">
                         {format(new Date(monitor.lastChecked), 'MMM dd, yyyy HH:mm')}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right py-1.5" onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="text-right py-1.5" onClick={e => e.stopPropagation()}>
                       <div className="flex justify-end gap-0.5">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          title="View Details"
-                        >
+                        <Button variant="ghost" size="icon" className="h-7 w-7" title="View Details">
                           <Eye className="h-3.5 w-3.5" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleConfigureAlert(monitor.id);
-                          }}
-                          title="Configure Alert"
-                        >
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={e => {
+                        e.stopPropagation();
+                        handleConfigureAlert(monitor.id);
+                      }} title="Configure Alert">
                           <Bell className="h-3.5 w-3.5" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          title="Edit"
-                        >
+                        <Button variant="ghost" size="icon" className="h-7 w-7" title="Edit">
                           <Edit className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </TableCell>
-                  </TableRow>
-                ))}
+                  </TableRow>)}
               </TableBody>
             </Table>
-          </div>
-        )}
+          </div>}
 
         {/* Dialogs */}
-        <AddMonitorDialog
-          open={addMonitorOpen}
-          onOpenChange={setAddMonitorOpen}
-          onAdd={handleAddMonitor}
-        />
+        <AddMonitorDialog open={addMonitorOpen} onOpenChange={setAddMonitorOpen} onAdd={handleAddMonitor} />
 
-        <ConfigureAlertDialog
-          open={configureAlertOpen}
-          onOpenChange={setConfigureAlertOpen}
-          monitorName={selectedMonitor}
-          onSave={handleSaveAlertConfig}
-        />
+        <ConfigureAlertDialog open={configureAlertOpen} onOpenChange={setConfigureAlertOpen} monitorName={selectedMonitor} onSave={handleSaveAlertConfig} />
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 }

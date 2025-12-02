@@ -101,14 +101,20 @@ export const ProblemTableView = ({
                 </Badge>
               </TableCell>
               <TableCell onClick={() => navigate(`/helpdesk/problems/${problem.id}`)} className="py-1.5">
-                {problem.assigned_to ? (
-                  <span className="text-[0.85rem]">{problem.assigned_to}</span>
+                {problem.assigned_to_user ? (
+                  <span className="text-[0.85rem]">
+                    {problem.assigned_to_user.name || problem.assigned_to_user.email}
+                  </span>
                 ) : (
                   <span className="text-muted-foreground italic text-[0.8rem]">Unassigned</span>
                 )}
               </TableCell>
               <TableCell onClick={() => navigate(`/helpdesk/problems/${problem.id}`)} className="py-1.5">
-                {problem.created_by_user?.name || problem.created_by_user?.email || (
+                {problem.created_by_user ? (
+                  <span className="text-[0.85rem]">
+                    {problem.created_by_user.name || problem.created_by_user.email}
+                  </span>
+                ) : (
                   <span className="text-muted-foreground italic text-[0.8rem]">Unknown</span>
                 )}
               </TableCell>

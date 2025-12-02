@@ -9,11 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Play, Eye, Clock, CheckCircle, XCircle } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const DepreciationRun = () => {
   const queryClient = useQueryClient();
   const [isRunning, setIsRunning] = useState(false);
   const [preview, setPreview] = useState<any>(null);
+  const [confirmRunOpen, setConfirmRunOpen] = useState(false);
 
   const { data: runLogs = [] } = useQuery({
     queryKey: ["depreciation-run-logs"],
@@ -72,11 +74,7 @@ const DepreciationRun = () => {
   };
 
   const handleActualRun = () => {
-    if (!window.confirm("Are you sure you want to run depreciation? This will create entries and update asset values.")) {
-      return;
-    }
-    setIsRunning(true);
-    runDepreciation.mutate(false);
+    setConfirmRunOpen(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -89,6 +87,7 @@ const DepreciationRun = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-background">
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
@@ -218,6 +217,21 @@ const DepreciationRun = () => {
         </Card>
       </div>
     </div>
+    
+    <ConfirmDialog
+      open={confirmRunOpen}
+      onOpenChange={setConfirmRunOpen}
+      onConfirm={() => {
+        setIsRunning(true);
+        runDepreciation.mutate(false);
+        setConfirmRunOpen(false);
+      }}
+      title="Run Depreciation"
+      description="Are you sure you want to run depreciation? This will create entries and update asset values."
+      confirmText="Run"
+      variant="destructive"
+    />
+    </>
   );
 };
 

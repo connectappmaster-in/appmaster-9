@@ -56,11 +56,25 @@ export default function HelpdeskProblemDetail() {
       const { data } = await supabase
         .from("users")
         .select("name, email")
-        .eq("id", problem.created_by)
+        .eq("auth_user_id", problem.created_by)
         .maybeSingle();
       return data;
     },
     enabled: !!problem?.created_by,
+  });
+
+  const { data: assignedToUser } = useQuery({
+    queryKey: ["problem-assignee", problem?.assigned_to],
+    queryFn: async () => {
+      if (!problem?.assigned_to) return null;
+      const { data } = await supabase
+        .from("users")
+        .select("name, email")
+        .eq("auth_user_id", problem.assigned_to)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!problem?.assigned_to,
   });
 
   const { data: linkedTickets } = useQuery({
@@ -235,11 +249,19 @@ export default function HelpdeskProblemDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <div className="text-muted-foreground">Assigned to</div>
-              <div>{problem.assigned_to || "Unassigned"}</div>
+              <div>
+                {assignedToUser?.name ||
+                  assignedToUser?.email ||
+                  (problem.assigned_to || "Unassigned")}
+              </div>
             </div>
             <div>
               <div className="text-muted-foreground">Created by</div>
-              <div>{createdByUser?.name || createdByUser?.email || problem.created_by || "Unknown"}</div>
+              <div>
+                {createdByUser?.name ||
+                  createdByUser?.email ||
+                  (problem.created_by || "Unknown")}
+              </div>
             </div>
             <div>
               <div className="text-muted-foreground">Created at</div>

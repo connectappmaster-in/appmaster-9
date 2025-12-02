@@ -142,6 +142,7 @@ export const EditTicketDialog = ({ open, onOpenChange, ticket }: EditTicketDialo
     },
     onSuccess: () => {
       toast.success("Ticket updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["unified-requests"] });
       queryClient.invalidateQueries({ queryKey: ["helpdesk-tickets"] });
       queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", ticket.id.toString()] });
       queryClient.invalidateQueries({ queryKey: ["helpdesk-dashboard-stats"] });

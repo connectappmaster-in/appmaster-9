@@ -149,7 +149,7 @@ export default function BulkActionsPage() {
                   <Checkbox checked={selectedAssets.length === assets.length} onCheckedChange={toggleAll} />
                 </TableHead>
                 <TableHead>ASSET ID</TableHead>
-                <TableHead>BRAND</TableHead>
+                <TableHead>MAKE</TableHead>
                 <TableHead>MODEL</TableHead>
                 <TableHead>CATEGORY</TableHead>
                 <TableHead>STATUS</TableHead>
